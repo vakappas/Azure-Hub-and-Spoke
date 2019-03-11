@@ -161,7 +161,7 @@
         },
         {
 			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
-			"name": "LinuxVM",
+			"name": "Ubuntu VM",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {

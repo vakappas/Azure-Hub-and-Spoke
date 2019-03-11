@@ -61,11 +61,6 @@
 		"vmDiskName": "[concat(parameters('vmName'), '-disk')]",
 		"vmDiskType": "Standard_LRS",
 		"vmOsDiskSize": 32,
-        "nicTemplateUriHash": {
-            "yes": "[uri(deployment().properties.templateLink.uri, 'nic_noNSG_noSLB_PIP_dynamic.json')]",
-            "no": "[uri(deployment().properties.templateLink.uri, 'nic_noNSG_noSLB_noPIP_dynamic.json')]"
-        },
-        "nicTemplateURI": "[variables('nicTemplateUriHash')[parameters('createPip')]]",
         "skuDataTable": {
             "ubuntu": {
                 "sku": "18.04-LTS",
