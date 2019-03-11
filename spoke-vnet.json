@@ -176,8 +176,7 @@
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnetName": { "value": "[parameters('subnet1Name')]"},
                     "vmName": {"value": "[concat(parameters('vmName'), '1')]"},
-                    "vmSize": {"value": "[parameters('vmSize')]"},
-                    "location": { "value": "[parameters('location')]" }            
+                    "vmSize": {"value": "[parameters('vmSize')]"}
                 }
             },
             "dependsOn": [
