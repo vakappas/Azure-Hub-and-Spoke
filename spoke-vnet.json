@@ -27,33 +27,13 @@
             "type": "string"
         },
         "subnet3Name": {
-            "defaultValue": "subnet2",
+            "defaultValue": "subnet3",
             "type": "string"
         },
         "subnet3Prefix": {
-            "defaultValue": "192.168.100.64/26",
+            "defaultValue": "192.168.100.128/26",
             "type": "string"
         },
-        "routetablename":{
-            "type": "string",
-            "defaultValue": "Subnet2-RT"
-        },
-        "nvaName": {
-            "type": "string",
-            "defaultValue": "myCsr"
-        },
-        "nvaSize": {
-            "type": "string",
-            "defaultValue": "Standard_D2_v2"
-        },
-        "csr-lan-ip": {
-            "type": "string",
-            "defaultValue": "192.168.100.4"
-        },
-        "csr-lan-ip-2": {
-            "type": "string",
-            "defaultValue": "192.168.100.4"
-        },         
         "vmName": {
             "type": "string",
             "defaultValue": "myVm"
@@ -78,32 +58,11 @@
         "networkApiVersion": "2018-04-01",
         "computeApiVersion": "2018-06-01",
         "storageApiVersion": "2018-07-01",
-        "nvaPipName": "[concat(parameters('nvaName'), '-pip')]",
         "vmPipName": "[concat(parameters('vmName'), '-pip1')]",
         "pipType": "Static",
         "pipSku": "Basic",
-        "nvaNic1Name": "[concat(parameters('nvaName'), '-nic1')]",
-		"nvaNic2Name": "[concat(parameters('nvaName'), '-nic2')]",
         "vmNicName": "[concat(parameters('vmName'), '-nic1')]",
-        "nvaNsgName": "[concat(parameters('nvaName'), '-nsg')]",
-        "vmNsgName": "[concat(parameters('vmName'), '-nsg1')]",
-        "nvaNsgRules": [
-            {
-                "name": "SSH",
-                "properties": {
-                    "priority": 1010,
-                    "protocol": "TCP",
-                    "access": "Allow",
-                    "direction": "Inbound",
-                    "sourceApplicationSecurityGroups": [],
-                    "destinationApplicationSecurityGroups": [],
-                    "sourceAddressPrefix": "*",
-                    "sourcePortRange": "*",
-                    "destinationAddressPrefix": "*",
-                    "destinationPortRange": "22"
-                }
-            }
-        ],
+        "vmNsgName": "[concat(parameters('vmName'), '-nsg')]",
         "vmNsgRules": [
             {
                 "name": "SSH",
@@ -136,15 +95,14 @@
                 }
             }
         ],
-        "nvaNsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('nvaNsgName'))]",
         "vmNsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('vmNsgName'))]",
         "vmDiskName": "[concat(parameters('vmName'), '-disk')]",
 		"vmDiskType": "Standard_LRS",
 		"vmOsDiskSize": 32,
-        "nvaOsDiskType": "StandardSSD_LRS",
         "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnet1Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnet1Name'))]",
         "subnet2Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnet2Name'))]",
+        "subnet3Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnet2Name'))]",
         "autoShutdownStatus": "Enabled",
         "autoShutdownTime": "19:00",
         "autoShutdownTimeZone": "Eastern Standard Time",
@@ -163,7 +121,7 @@
    },
     "resources": [
         {
-            "comments": "Create Vnet with two subnets",
+            "comments": "Create Vnet with three subnets",
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('vnetName')]",
             "apiVersion": "[variables('networkApiVersion')]",
@@ -178,10 +136,7 @@
                     {
                         "name": "[parameters('subnet1Name')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnet1Prefix')]",
-                            "routeTable": {
-                                "id": "[resourceId('Microsoft.Network/routeTables', concat(parameters('routetablename'), '-rt'))]"            
-                          }
+                            "addressPrefix": "[parameters('subnet1Prefix')]"                            
                         }
                     },
                     {
@@ -189,13 +144,17 @@
                         "properties": {
                             "addressPrefix": "[parameters('subnet2Prefix')]"
                         }
+                    },
+                    {
+                        "name": "[parameters('subnet3Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet3Prefix')]"
+                        }
                     }
 				]
             },
             "resources": [],
             "dependsOn": [
-                "[concat('Microsoft.Network/routeTables/', parameters('routetablename'), '-rt')]",
-                "[concat('Microsoft.Network/networkSecurityGroups/', variables('nvaNsgName'))]",
                 "[concat('Microsoft.Network/networkSecurityGroups/', variables('vmNsgName'))]"
             ]
         },
@@ -209,208 +168,6 @@
             "kind": "[variables('diagnosticsStorageAccountKind')]",
             "sku": {
                 "name": "[variables('diagnosticsStorageAccountType')]"
-            },
-            "tags": {}
-        },
-        {
-            "comments": "Create NIC1 for CSR",
-            "name": "[variables('nvaNic1Name')]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "[variables('networkApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('nvaNsgName')]",
-                "[variables('nvaPipName')]",
-                "[parameters('vnetName')]"
-            ],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "subnet": {
-                                "id": "[variables('subnet2Ref')]"
-                            },
-							"primary": true,
-                            "privateIPAddressVersion": "IPv4",
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIpAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('nvaPipName'))]"
-                            }
-                        }
-                    }
-                ],
-				 "enableAcceleratedNetworking": false,
-                "enableIPForwarding": true,
-                "primary": true,
-                "tapConfigurations": [],
-				
-                "networkSecurityGroup": {
-                    "id": "[variables('nvaNsgId')]"
-                }
-            },
-            "tags": {}
-        },
-        {
-            "comments": "Create NIC2 for CSR",
-            "name": "[variables('nvaNic2Name')]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "[variables('networkApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('nvaNsgName')]",
-                "[parameters('vnetName')]"
-            ],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig2",
-                        "properties": {
-                            "subnet": {
-                                "id": "[variables('subnet1Ref')]"
-                            },
-							"primary": true,
-                            "privateIPAddressVersion": "IPv4",
-                            "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[parameters('csr-lan-ip')]"
-                        }
-                    },
-                    {
-                        "name": "ipconfig3",
-                        "properties": {
-                            "subnet": {
-                                "id": "[variables('subnet1Ref')]"
-                            },
-							"primary": false,
-                            "privateIPAddressVersion": "IPv4",
-                            "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[parameters('csr-lan-ip-2')]"
-                        }
-                    }
-                ],
-				 "enableAcceleratedNetworking": false,
-                "enableIPForwarding": true,
-                "primary": true,
-                "tapConfigurations": [],
-				
-                "networkSecurityGroup": {
-                    "id": "[variables('nvaNsgId')]"
-                }
-            },
-            "tags": {}
-        },
-        {
-            "comments": "NSG allowing port 22 for CSR",
-            "name": "[variables('nvaNsgName')]",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "[variables('networkApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "securityRules": "[variables('nvaNsgRules')]"
-            },
-            "tags": {}
-        },
-        {
-            "comments": "PIP for the NVA",
-            "name": "[variables('nvaPipName')]",
-            "type": "Microsoft.Network/publicIpAddresses",
-            "apiVersion": "[variables('networkApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "publicIpAllocationMethod": "[variables('pipType')]"
-            },
-            "sku": {
-                "name": "[variables('pipSku')]"
-            },
-            "tags": {}
-        },
-        {
-            "comments": "Cisco CSR 1000v NVA",
-            "name": "[parameters('nvaName')]",
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "[variables('computeApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('nvaNic1Name')]",
-                "[variables('nvaNic2Name')]",
-                "[variables('storageName')]"
-            ],
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "[parameters('nvaSize')]"
-                },
-                "storageProfile": {
-                    "osDisk": {
-                        "createOption": "FromImage",
-                        "managedDisk": {
-                            "storageAccountType": "[variables('nvaOsDiskType')]"
-                        }
-                    },
-                    "imageReference": {
-                        "publisher": "cisco",
-                        "offer": "cisco-csr-1000v",
-                        "sku": "16_9-byol",
-                        "version": "16.9.120180924"
-                    }
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nvaNic1Name'))]",
-                            "properties": {
-                                "primary": true
-                            }
-                        },
-                        {
-
-							"id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nvaNic2Name'))]",
-                            "properties": {
-                                "primary": false
-                            }
-                        }
-                    ]
-                },
-                "osProfile": {
-                    "computerName": "[parameters('nvaName')]",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]"
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": true,
-                        "storageUri": "[concat('https://', variables('diagnosticsStorageAccountName'), '.blob.core.windows.net/')]"
-                    }
-                }
-            },
-            "plan": {
-                "name": "16_9-byol",
-                "publisher": "cisco",
-                "product": "cisco-csr-1000v"
-            },
-            "tags": {}
-        },
-        {
-            "comments": "Shutdown schedule for CSR",
-            "name": "[concat('shutdown-computevm-', parameters('nvaName'))]",
-            "type": "Microsoft.DevTestLab/schedules",
-            "apiVersion": "2017-04-26-preview",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('nvaName'))]"
-            ],
-            "properties": {
-                "status": "[variables('autoShutdownStatus')]",
-                "taskType": "ComputeVmShutdownTask",
-                "dailyRecurrence": {
-                    "time": "[variables('autoShutdownTime')]"
-                },
-                "timeZoneId": "[variables('autoShutdownTimeZone')]",
-                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('nvaName'))]",
-                "notificationSettings": {
-                    "status": "[variables('autoShutdownNotificationStatus')]",
-                    "notificationLocale": "[variables('autoShutdownNotificationLocale')]",
-                    "timeInMinutes": "30"
-                }
             },
             "tags": {}
         },
@@ -433,8 +190,7 @@
                             "subnet": {
                                 "id": "[variables('subnet1Ref')]"
                             },
-                            "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[parameters('vm-lan-ip')]",
+                            "privateIPAllocationMethod": "Dynamic",
                             "publicIpAddress": {
                                 "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('vmPipName'))]"
                             }
@@ -572,25 +328,6 @@
 			"dependsOn": [
 				"[parameters('vmName')]"
 			]
-        },
-        {
-            "comments": "Route Table that has to be assigned to Inside subnet",
-            "type": "Microsoft.Network/routeTables",      
-            "name": "[concat(parameters('routetablename'),'-rt')]",      
-            "apiVersion": "2018-08-01",      
-            "location": "[resourceGroup().location]",      
-            "properties": {      
-              "routes": [      
-                {      
-                  "name": "[parameters('routetablename')]",      
-                  "properties": {      
-                    "addressPrefix": "[concat(parameters('vm-lan-ip'), '/32')]",      
-                    "nextHopType": "VirtualAppliance",      
-                    "nextHopIpAddress": "[parameters('csr-lan-ip')]"      
-                  }     
-                }      
-              ]      
-            }   
         }
      ],
     "outputs": {
