@@ -59,7 +59,7 @@
         "computeApiVersion": "2018-06-01",
         "storageApiVersion": "2018-07-01",
         "deploymentApiVersion": "2017-05-10",
-        "vmTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'linuxVM.json')]",
+        "vmTemplateUri": "[uri(deployment().properties.templateLink.uri, 'linuxVM.json')]",
         "vmPipName": "[concat(parameters('vmName'), '-pip1')]",
         "pipType": "Static",
         "pipSku": "Basic",

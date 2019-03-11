@@ -33,8 +33,8 @@ az login
 az account set --subscription "vakappas - Internal Consumption"
 
 # Resource Group Creation
-$rg="hub-and-spoke-rg"
-$location="westeurope"
+rg="hub-and-spoke-rg"
+location="westeurope"
 
 az group create -n $rg -l $location
 
