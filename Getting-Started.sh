@@ -27,3 +27,19 @@ az group delete -n $rg -y --no-wait
 
 # Starting VMs
 az vm start --ids $(az vm list -g $rg --query "[].id" -o tsv)
+
+# Login to Azure Account
+az login
+az account set --subscription "vakappas - Internal Consumption"
+
+# Resource Group Creation
+$rg="hub-and-spoke-rg"
+$location="westeurope"
+
+az group create -n $rg -l $location
+
+# Setting the URL
+url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/spoke-vnet.json
+
+# Running the deployment
+az group deployment create -g $rg --template-uri $url --parameters '{"adminPassword":{"value":"P@ssw0rd@2019"}}'

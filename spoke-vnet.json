@@ -58,6 +58,8 @@
         "networkApiVersion": "2018-04-01",
         "computeApiVersion": "2018-06-01",
         "storageApiVersion": "2018-07-01",
+        "deploymentApiVersion": "2017-05-10",
+        "vmTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'linuxVM.json')]",
         "vmPipName": "[concat(parameters('vmName'), '-pip1')]",
         "pipType": "Static",
         "pipSku": "Basic",
@@ -155,179 +157,31 @@
             },
             "resources": [],
             "dependsOn": [
-                "[concat('Microsoft.Network/networkSecurityGroups/', variables('vmNsgName'))]"
             ]
         },
         {
-            "comments": "Storage Account for diagnostics",
-            "name": "[variables('storageName')]",
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "[variables('storageApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "properties": {},
-            "kind": "[variables('diagnosticsStorageAccountKind')]",
-            "sku": {
-                "name": "[variables('diagnosticsStorageAccountType')]"
-            },
-            "tags": {}
-        },
-        {
-            "comments": "Create NIC for VM",
-            "name": "[variables('vmNicName')]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "[variables('networkApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('vmNsgName')]",
-                "[variables('vmPipName')]",
-                "[parameters('vnetName')]"
-            ],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "subnet": {
-                                "id": "[variables('subnet1Ref')]"
-                            },
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIpAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('vmPipName'))]"
-                            }
-                        }
-                    }
-                ],
-                "networkSecurityGroup": {
-                    "id": "[variables('vmNsgId')]"
-                }
-            },
-            "tags": {}
-        },	
-        {
-            "comments": "NSG allowing port 22 for VM",
-            "name": "[variables('vmNsgName')]",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "[variables('networkApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "securityRules": "[variables('vmNsgRules')]"
-            },
-            "tags": {}
-        },
-        {
-            "comments": "PIP for the VM",
-            "name": "[variables('vmPipName')]",
-            "type": "Microsoft.Network/publicIpAddresses",
-            "apiVersion": "[variables('networkApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "publicIpAllocationMethod": "[variables('pipType')]"
-            },
-            "sku": {
-                "name": "[variables('pipSku')]"
-            },
-            "tags": {}
-        },
-        {
-            "comments": "Deploy Linux VM1",
-            "type": "Microsoft.Compute/virtualMachines",
-            "name": "[parameters('vmName')]",
-            "apiVersion": "[variables('computeApiVersion')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "[parameters('vmSize')]"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "Canonical",
-                        "offer": "UbuntuServer",
-                        "sku": "18.04-LTS",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "osType": "Linux",
-                        "caching": "ReadWrite",
-                        "name": "[variables('vmDiskName')]",
-                        "diskSizeGb": "[variables('vmOsDiskSize')]",
-                        "createOption": "FromImage",
-                        "managedDisk": {
-                            "storageAccountType": "[variables('vmDiskType')]"
-                        }
-                        },
-                    "dataDisks": []
-                },
-                "osProfile": {
-                    "computerName": "[parameters('vmName')]",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": false
-                    },
-                    "secrets": [],
-                    "adminPassword": "[parameters('adminPassword')]"
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vmNicName'))]",
-                            "properties": {
-                                "primary": true
-                            }
-                        }
-                    ]
-                }
-            },
-            "resources": [],
-            "dependsOn": [
-                "[variables('vmNicName')]"
-            ]
-        }, 
-        {
-            "comments": "Shutdown schedule for VM",
-            "name": "[concat('shutdown-computevm-', parameters('vmName'))]",
-            "type": "Microsoft.DevTestLab/schedules",
-            "apiVersion": "2017-04-26-preview",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
-            ],
-            "properties": {
-                "status": "[variables('autoShutdownStatus')]",
-                "taskType": "ComputeVmShutdownTask",
-                "dailyRecurrence": {
-                    "time": "[variables('autoShutdownTime')]"
-                },
-                "timeZoneId": "[variables('autoShutdownTimeZone')]",
-                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
-                "notificationSettings": {
-                    "status": "[variables('autoShutdownNotificationStatus')]",
-                    "notificationLocale": "[variables('autoShutdownNotificationLocale')]",
-                    "timeInMinutes": "30"
-                }
-            },
-            "tags": {}
-        }, 
-		{
-			"comments": "Create Linux custom extension to install software in the VM",
-			"type": "Microsoft.Compute/virtualMachines/extensions",
-			"name": "[concat(parameters('vmName'), '/installcustomscript')]",
-			"apiVersion": "[variables('computeApiVersion')]",
-			"location": "[resourceGroup().location]",
+			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
+			"name": "LinuxVM",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
-				"publisher": "Microsoft.Azure.Extensions",
-				"type": "CustomScript",
-				"typeHandlerVersion": "2.0",
-				"autoUpgradeMinorVersion": true,
-				"settings": {
-					"fileUris": [
-						"[variables('customScriptUri')]"
-					],
-					"commandToExecute": "[variables('customScriptCmd')]"
-				}
-			},
-			"dependsOn": [
-				"[parameters('vmName')]"
-			]
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('vmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet1Name')]"},
+                    "vmName": {"value": "[concat(parameters('vmName'), '1')]"},
+                    "vmSize": {"value": "[parameters('vmSize')]"},
+                    "location": { "value": "[parameters('location')]" }            
+                }
+            },
+            "dependsOn": [
+            ]
         }
      ],
     "outputs": {

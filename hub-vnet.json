@@ -27,44 +27,60 @@
             "type": "string"
         },
         "subnet3Name": {
-            "defaultValue": "subnet2",
+            "defaultValue": "subnet3",
             "type": "string"
         },
         "subnet3Prefix": {
-            "defaultValue": "192.168.100.64/26",
+            "defaultValue": "192.168.100.128/26",
             "type": "string"
         },
-        "routetablename":{
-            "type": "string",
-            "defaultValue": "Subnet2-RT"
+        "subnet4Name": {
+            "defaultValue": "subnet4",
+            "type": "string"
         },
-        "nvaName": {
-            "type": "string",
-            "defaultValue": "myCsr"
+        "subnet4Prefix": {
+            "defaultValue": "192.168.100.128/26",
+            "type": "string"
         },
-        "nvaSize": {
+        "nva1Name": {
+            "type": "string",
+            "defaultValue": "vASA"
+        },
+        "nva1Size": {
             "type": "string",
             "defaultValue": "Standard_D2_v2"
         },
-        "csr-lan-ip": {
+        "nva2Name": {
             "type": "string",
-            "defaultValue": "192.168.100.4"
+            "defaultValue": "FTDv"
         },
-        "csr-lan-ip-2": {
+        "nva2Size": {
             "type": "string",
-            "defaultValue": "192.168.100.4"
-        },         
-        "vmName": {
-            "type": "string",
-            "defaultValue": "myVm"
+            "defaultValue": "Standard_D2_v2"
         },
-        "vmSize": {
+        "nva3Name": {
+            "type": "string",
+            "defaultValue": "FTDv"
+        },
+        "nva3Size": {
+            "type": "string",
+            "defaultValue": "Standard_D3_v2"
+        },
+        "vm1Name": {
+            "type": "string",
+            "defaultValue": "CommonVM1"
+        },
+        "vm1Size": {
             "type": "string",
             "defaultValue": "Standard_B1s"
         },
-        "vm-lan-ip": {
+        "vm2Name": {
             "type": "string",
-            "defaultValue": "192.168.100.11"
+            "defaultValue": "CommonVM2"
+        },
+        "vm2Size": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
         },
         "adminUsername": {
             "type": "string",
