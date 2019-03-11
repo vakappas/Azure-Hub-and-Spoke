@@ -6,10 +6,6 @@
             "defaultValue": "myVnet",
             "type": "string"
         },
-        "location": {
-            "defaultValue": "[resourceGroup().location]",
-            "type": "string"
-        },
         "subnetName": {
             "defaultValue": "serverSubnet",
             "type": "string"
