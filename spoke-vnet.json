@@ -180,6 +180,7 @@
                 }
             },
             "dependsOn": [
+                "[parameters('vnetName')]"
             ]
         }
      ],
