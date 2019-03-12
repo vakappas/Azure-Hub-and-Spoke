@@ -6,7 +6,7 @@
             "defaultValue": "myVnet",
             "type": "string"
         },
-        "subnet1Name": {
+        "subnetName": {
             "defaultValue": "serverSubnet",
             "type": "string"
 		},
@@ -103,7 +103,7 @@
         ],
         "vmNsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('vmNsgName'))]",
         "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-        "subnet1Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnet1Name'))]",
+        "subnet1Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         "subnet2Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnet2Name'))]",
         "autoShutdownStatus": "Enabled",
         "autoShutdownTime": "19:00",
