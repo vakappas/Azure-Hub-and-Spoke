@@ -104,6 +104,7 @@
         "vmNsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('vmNsgName'))]",
         "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnet1Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        
         "autoShutdownStatus": "Enabled",
         "autoShutdownTime": "19:00",
         "autoShutdownTimeZone": "Eastern Standard Time",
@@ -138,9 +139,9 @@
                         "name": "ipconfig1",
                         "properties": {
                             "subnet": {
-                                "id": "[variables('subnet1Ref')]"
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnetName'))]"
                             },
-                            "privateIPAllocationMethod": "Dynamic",
+                            "privateIPAllocationMethod": "dynamic",
                             "publicIpAddress": {
                                 "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('vmPipName'))]"
                             }
