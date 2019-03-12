@@ -6,7 +6,7 @@
             "defaultValue": "myVnet",
             "type": "string"
         },
-        "subnetName": {
+        "subnet1Name": {
             "defaultValue": "serverSubnet",
             "type": "string"
 		},
