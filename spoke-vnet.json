@@ -62,64 +62,7 @@
         "vmTemplateUri": "[uri(deployment().properties.templateLink.uri, 'linuxVM.json')]",
         "vmPipName": "[concat(parameters('vmName'), '-pip1')]",
         "pipType": "Static",
-        "pipSku": "Basic",
-        "vmNicName": "[concat(parameters('vmName'), '-nic1')]",
-        "vmNsgName": "[concat(parameters('vmName'), '-nsg')]",
-        "vmNsgRules": [
-            {
-                "name": "SSH",
-                "properties": {
-                    "priority": 1010,
-                    "protocol": "TCP",
-                    "access": "Allow",
-                    "direction": "Inbound",
-                    "sourceApplicationSecurityGroups": [],
-                    "destinationApplicationSecurityGroups": [],
-                    "sourceAddressPrefix": "*",
-                    "sourcePortRange": "*",
-                    "destinationAddressPrefix": "*",
-                    "destinationPortRange": "22"
-                }
-            },
-            {
-                "name": "HTTP",
-                "properties": {
-                    "priority": 1020,
-                    "protocol": "TCP",
-                    "access": "Allow",
-                    "direction": "Inbound",
-                    "sourceApplicationSecurityGroups": [],
-                    "destinationApplicationSecurityGroups": [],
-                    "sourceAddressPrefix": "*",
-                    "sourcePortRange": "*",
-                    "destinationAddressPrefix": "*",
-                    "destinationPortRange": "80"
-                }
-            }
-        ],
-        "vmNsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('vmNsgName'))]",
-        "vmDiskName": "[concat(parameters('vmName'), '-disk')]",
-		"vmDiskType": "Standard_LRS",
-		"vmOsDiskSize": 32,
-        "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-        "subnet1Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnet1Name'))]",
-        "subnet2Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnet2Name'))]",
-        "subnet3Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnet2Name'))]",
-        "autoShutdownStatus": "Enabled",
-        "autoShutdownTime": "19:00",
-        "autoShutdownTimeZone": "Eastern Standard Time",
-        "autoShutdownNotificationStatus": "Disabled",
-        "autoShutdownNotificationLocale": "en",
-        "storageName": "[toLower(concat(uniqueString(resourceGroup().id), 'diag'))]",
-        "storageId": "[resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageName'))]",
-        "diagnosticsStorageAccountName": "[variables('storageName')]",
-        "diagnosticsStorageAccountId": "[variables('storageId')]",
-        "diagnosticsStorageAccountType": "Standard_LRS",
-        "diagnosticsStorageAccountKind": "Storage",
-		"customScript": "ubuntuConfig.bash",
-        "thisTemplateUri": "[deployment().properties.templateLink.uri]",
-        "customScriptUri": "[uri(variables('thisTemplateUri'), variables('customScript'))]",
-        "customScriptCmd": "[concat('chmod 666 ', variables('customScript'), ' && /bin/sh ./', variables('customScript'))]"
+        "pipSku": "Basic"       
    },
     "resources": [
         {
