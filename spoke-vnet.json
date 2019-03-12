@@ -55,10 +55,7 @@
         "computeApiVersion": "2018-06-01",
         "storageApiVersion": "2018-07-01",
         "deploymentApiVersion": "2017-05-10",
-        "vmTemplateUri": "[uri(deployment().properties.templateLink.uri, 'linuxVM.json')]",
-        "vmPipName": "[concat(parameters('vmName'), '-pip1')]",
-        "pipType": "dynamic",
-        "pipSku": "Basic"       
+        "vmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]"
    },
     "resources": [
         {
@@ -115,7 +112,8 @@
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnetName": { "value": "[parameters('subnet1Name')]"},
                     "vmName": {"value": "[concat(parameters('vmName'), '1')]"},
-                    "vmSize": {"value": "[parameters('vmSize')]"}
+                    "vmSize": {"value": "[parameters('vmSize')]"},
+                    "createPip":{"value": "yes"}
                 }
             },
             "dependsOn": [
