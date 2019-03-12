@@ -56,7 +56,9 @@
         "pipSku": "Basic",
 		"vmDiskName": "[concat(parameters('vmName'), '-disk')]",
 		"vmDiskType": "Standard_LRS",
-		"vmOsDiskSize": 32,
+        "vmOsDiskSize": 32,
+        "vmNicName": "[concat(parameters('vmName'), '-nic1')]",
+        "vmNsgName": "[concat(parameters('vmName'), '-nsg')]",
         "skuDataTable": {
             "ubuntu": {
                 "sku": "18.04-LTS",
