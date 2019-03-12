@@ -39,7 +39,8 @@ location="westeurope"
 az group create -n $rg -l $location
 
 # Setting the URL
-url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/spoke-vnet.json
+url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/linuxVM.json
+url=https://raw.githubusercontent.com/erjosito/azure-networking-lab/master/linuxVM.json
 
 # Running the deployment
-az group deployment create -g $rg --template-uri $url --parameters '{"adminPassword":{"value":"P@ssw0rd@2019"}}'
+az group deployment create -g $rg --template-uri $url --parameters '{"adminPassword":{"value":"P@ssw0rd@2019"}, "adminUsername":{"value":"lab-user"}, "vnetName":{"value":"spoke-net"}, "subnetName":{"value":"subnet1"}}'

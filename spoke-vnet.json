@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vnetName": {
-            "defaultValue": "spoke-net",
+            "defaultValue": "spoke-vnet",
             "type": "string"
         },
         "vnetPrefix": {
@@ -42,10 +42,6 @@
             "type": "string",
             "defaultValue": "Standard_B1s"
         },
-        "vm-lan-ip": {
-            "type": "string",
-            "defaultValue": "192.168.100.11"
-        },
         "adminUsername": {
             "type": "string",
             "defaultValue": "lab-user"
@@ -61,7 +57,7 @@
         "deploymentApiVersion": "2017-05-10",
         "vmTemplateUri": "[uri(deployment().properties.templateLink.uri, 'linuxVM.json')]",
         "vmPipName": "[concat(parameters('vmName'), '-pip1')]",
-        "pipType": "Static",
+        "pipType": "dynamic",
         "pipSku": "Basic"       
    },
     "resources": [
