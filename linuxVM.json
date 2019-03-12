@@ -57,7 +57,6 @@
 		"vmDiskName": "[concat(parameters('vmName'), '-disk')]",
 		"vmDiskType": "Standard_LRS",
         "vmOsDiskSize": 32,
-        "vmNicName": "[concat(parameters('vmName'), '-nic1')]",
         "vmNsgName": "[concat(parameters('vmName'), '-nsg')]",
         "skuDataTable": {
             "ubuntu": {
@@ -103,7 +102,7 @@
         ],
         "vmNsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('vmNsgName'))]",
         "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-        "subnet1Ref": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         
         "autoShutdownStatus": "Enabled",
         "autoShutdownTime": "19:00",
@@ -139,7 +138,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnetName'))]"
+                                "id": "[variables('subnetRef')]"
                             },
                             "privateIPAllocationMethod": "dynamic",
                             "publicIpAddress": {
