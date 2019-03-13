@@ -11,13 +11,13 @@
             "type": "string"
         },
         "storageAccountName": {
-            "defaultValue": "asatestjoselito",
+            "defaultValue": "randomstorageaccount",
             "type": "string"
         },
         "vmType": {
             "defaultValue": "csr",
             "type": "string",
-            "allowedValues": ["csr", "ubuntu"]
+            "allowedValues": ["csr", "ubuntu", "asa"]
         },
         "vmCount": {
             "defaultValue": 1,
@@ -27,11 +27,11 @@
             "defaultValue": "myCsr",
             "type": "string"
         },
-        "vmUsr": {
+        "adminUsername": {
             "defaultValue": "myadmin",
             "type": "string"
         },
-        "vmPwd": {
+        "adminPassword": {
             "defaultValue": null,
             "type": "securestring"
         },
@@ -69,10 +69,12 @@
         }
     },
     "variables": {
+        "apiVersion": "2017-03-30",
         "defaultGw": {
             "nic0": "[concat(parameters('ip0'), '1')]",
             "nic1": "[concat(parameters('ip1'), '1')]"
         },
+        "nvaOsDiskType": "StandardSSD_LRS",
         "settingsTable": {
             "asa": {
                 "planName": "asav-azure-byol",
@@ -111,7 +113,7 @@
             "comments": "Deploy Virtual Network Appliance",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmName'), '-', copyIndex(1))]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "[variables('apiVersion')]",
             "location": "[resourceGroup().location]",
             "plan": {
                 "name": "[variables('settings')['planName']]",
@@ -135,8 +137,8 @@
                     "osDisk": {
                         "name": "[concat(parameters('vmName'),'-disk')]",
                         "createOption": "FromImage",
-                        "vhd": {
-                            "uri": "[concat('http', '://', parameters('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('vmName'),'-disk.vhd'))]"
+                        "managedDisk": {
+                            "storageAccountType": "[variables('nvaOsDiskType')]"
                         },
                         "caching": "ReadWrite"
                     },
@@ -144,12 +146,12 @@
                 },
                 "osProfile": {
                     "computerName": "[parameters('vmName')]",
-                    "adminUsername": "[parameters('vmUsr')]",
+                    "adminUsername": "[parameters('adminUsername')]",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": false
                     },
                     "secrets": [],
-                    "adminPassword": "[parameters('vmPwd')]"
+                    "adminPassword": "[parameters('adminPassword')]"
                 },
                 "networkProfile": {
                     "networkInterfaces": [
