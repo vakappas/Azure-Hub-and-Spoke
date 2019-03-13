@@ -35,7 +35,7 @@
             "type": "string"
         },
         "subnet4Name": {
-            "defaultValue": "subnet3",
+            "defaultValue": "subnet4",
             "type": "string"
         },
         "subnet4Prefix": {
@@ -145,7 +145,7 @@
                     "vmType": {"value": "asa"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnet0Name": { "value": "[parameters('subnet1Name')]"},
-                    "subnet1Name": { "value": "[parameters('subnet1Name')]"},
+                    "subnet1Name": { "value": "[parameters('subnet2Name')]"},
                     "ip0": {"value": "[parameters('nvaip0')]"},
                     "ip1": {"value": "[parameters('nvaip1')]"},
                     "vmName": {"value": "[concat(parameters('vmName'), '1')]"},

@@ -40,7 +40,7 @@ az group create -n $rg -l $location
 
 # Setting the URL
 url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/linuxVM.json
-url=https://raw.githubusercontent.com/erjosito/azure-networking-lab/master/linuxVM.json
+url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/hub-vnet.json
 url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/spoke-vnet.json
 
 # Running the deployment
