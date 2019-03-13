@@ -70,6 +70,7 @@
     },
     "variables": {
         "apiVersion": "2017-03-30",
+        "computeApiVersion": "2018-06-01",
         "defaultGw": {
             "nic0": "[concat(parameters('ip0'), '1')]",
             "nic1": "[concat(parameters('ip1'), '1')]"
@@ -123,7 +124,7 @@
             "comments": "Deploy Virtual Network Appliance",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmName'), '-', copyIndex(1))]",
-            "apiVersion": "[variables('apiVersion')]",
+            "apiVersion": "[variables('computeApiVersion')]",
             "location": "[resourceGroup().location]",
             "plan": {
                 "name": "[variables('settings')['planName']]",
