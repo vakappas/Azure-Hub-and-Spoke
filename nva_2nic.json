@@ -106,8 +106,18 @@
 			"comments": "Availability set for eventual NVA HA",
 			"type": "Microsoft.Compute/availabilitySets",
 			"name": "[variables('avSetName')]",
-			"apiVersion": "2016-03-30",
-			"location": "[resourceGroup().location]"
+			"apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "sku":{
+                "name": "Aligned"
+            },
+            "tags": {
+
+            },
+            "properties":{
+                "platformUpdateDomainCount": 1,
+                "platformFaultDomainCount": 1
+            }
 		},
         {
             "comments": "Deploy Virtual Network Appliance",
