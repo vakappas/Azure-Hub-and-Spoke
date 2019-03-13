@@ -149,7 +149,6 @@
                     "ip0": {"value": "[parameters('nvaip0')]"},
                     "ip1": {"value": "[parameters('nvaip1')]"},
                     "vmName": {"value": "[concat(parameters('vmName'), '1')]"},
-                    "vmSize": {"value": "[parameters('vmSize')]"},
                     "pipName":{"value": "asa-publicIP"}
                 }
             },
