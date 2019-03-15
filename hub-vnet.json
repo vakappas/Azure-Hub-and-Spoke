@@ -178,7 +178,8 @@
                 }
             },
             "dependsOn": [
-                "[parameters('vnetName')]"
+                "[parameters('vnetName')]",
+                "[parameters('nvaName')]"
             ]
         }
      ],
