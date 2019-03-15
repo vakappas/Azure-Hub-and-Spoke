@@ -171,7 +171,7 @@
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
-                    "subnetName": { "value": "[parameters('subnet1Name')]"},
+                    "subnetName": { "value": "[parameters('subnet3Name')]"},
                     "vmName": {"value": "[concat(parameters('vmName'), '1')]"},
                     "vmSize": {"value": "[parameters('vmSize')]"},
                     "createPip":{"value": "yes"}

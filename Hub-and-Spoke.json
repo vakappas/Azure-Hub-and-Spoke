@@ -16,41 +16,29 @@
                 "description": "Password to be configured in the NVA (user is lab-user)"
             }
         },
-        "onpremcsr-lan-ip": {
-            "type": "string",
-            "defaultValue": "10.100.100.4"
-        },
-        "onpremvm-lan-ip": {
-            "type": "string",
-            "defaultValue": "10.100.100.11"
-        },
-        "azurecsr-lan-ip": {
-            "type": "string",
-            "defaultValue": "10.100.100.104"
-        },
-        "azurevm-lan-ip": {
-            "type": "string",
-            "defaultValue": "10.100.100.111"
-        },
         "config": {
             "type": "object",
             "defaultValue": {
                 "vnets": [
                     {
-                        "vnetName": "onprem-vnet",
-                        "vnetPrefix": "10.100.0.0/16",
-                        "Outside": "10.100.200.0/24",
-			            "Inside": "10.100.100.0/24",
-                        "vmName": "onprem-vm",
-            			"nvaName": "onprem-pxtr"
+                        "vnetName": "hub-vnet",
+                        "vnetPrefix": "10.0.0.0/16",
+                        "Outside": "10.0.1.0/24",
+                        "Inside": "10.0.2.0/24",
+                        "ServersNet01": "10.0.3.0/24",
+                        "ServersNet02": "10.0.4.0/24",
+                        "vmName": "hub-srv01",
+                        "nvaName": "asa",
+                        "nvaip0": "10.0.1.10",
+                        "nvaip1": "10.0.2.10"
                     },
                     {
-                        "vnetName": "azure-vnet",
-                        "vnetPrefix": "10.100.0.0/16",
-                        "Outside": "10.100.210.0/24",
-                        "Inside": "10.100.100.0/24",
-                        "vmName": "azure-vm1",
-                        "nvaName": "azure-pxtr1"
+                        "vnetName": "spoke-vnet",
+                        "vnetPrefix": "10.1.0.0/24",
+                        "FrontNet": "10.1.0.0/26",
+                        "AppNet": "10.1.0.64/26",
+                        "DBNet": "10.1.0.128/26",
+                        "vmName": "sp-srv01"
                     }
                 ]
             }
@@ -59,38 +47,41 @@
     "variables": {
         "networkApiVersion": "2018-08-01",
         "deploymentApiVersion": "2017-05-10",
-        "nvaTemplateUrl1": "[uri(deployment().properties.templateLink.uri, 'nvaCSR1kv.json')]",
-        "nvaTemplateUrl2": "[uri(deployment().properties.templateLink.uri, 'nvaCSR1kv2.json')]"
+        "hubTemplateUri": "[uri(deployment().properties.templateLink.uri, 'hub-vnet.json')]",
+        "spokeTemplateUri": "[uri(deployment().properties.templateLink.uri, 'spoke-vnet.json')]",
+        "hub-vnet":"[parameters('config')['vnets'][0]]"
     },
     "resources": [
 		{
-			"comments": "Simulate a number of vnets, each including two subnets, an Ubuntu VM and a CSR 1Kv NVA",
-			"name": "OnPrem",
+			"comments": "Create Hub and Spoke vnets along with NVAs and VMs",
+			"name": "hub-vnet",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
-					"uri": "[variables('nvaTemplateUrl2')]",
+					"uri": "[variables('hubTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetPrefix": {"value": "[parameters('config')['vnets'][0]['vnetPrefix']]"},
-                    "vnetName": {"value": "[parameters('config')['vnets'][0]['vnetName']]"},
-                    "subnet1Name": {"value": "Inside"},
+                    "vnetName": {"value": "[variables('hub-vnet').vnetName]"},
+                    "subnet1Name": {"value": "Outside"},
                     "subnet1Prefix": {"value": "[parameters('config')['vnets'][0]['Inside']]"},
-                    "routetablename": {"value": "onprem-to-Azure-VMs"},
-                    "subnet2Name": {"value": "Outside"},
+                    "subnet2Name": {"value": "Inside"},
                     "subnet2Prefix": {"value": "[parameters('config')['vnets'][0]['Outside']]"},
+                    "subnet3Name": {"value": "ServersNet01"},
+                    "subnet3Prefix": {"value": "[parameters('config')['vnets'][0]['ServersNet01']]"},
+                    "subnet4Name": {"value": "ServersNet02"},
+                    "subnet4Prefix": {"value": "[parameters('config')['vnets'][0]['ServersNet02']]"},
                     "nvaName": {"value": "[parameters('config')['vnets'][0]['nvaName']]"},
-                    "nvaSize": {"value": "Standard_D2_v2"},
-                    "csr-lan-ip": {"value": "[parameters('onpremcsr-lan-ip')]"},
-                    "csr-lan-ip-2": {"value": "[parameters('azurevm-lan-ip')]"},                  
+                    "nvaSize": {"value": "Standard_D3_v2"},
+                    "nvaip0": {"value": "[parameters('config')['vnets'][0]['nvaip0']]"},
+                    "nvaip1": {"value": "[parameters('config')['vnets'][0]['nvaip1']]"},                               
 					"vmName": {"value": "[parameters('config')['vnets'][0]['vmName']]"},
-                    "vmSize": {"value": "Standard_B1s"},
-                    "vm-lan-ip": {"value": "[parameters('onpremvm-lan-ip')]"}
+                    "vmSize": {"value": "Standard_B1s"}
                 }
             },
             "dependsOn": [
@@ -104,7 +95,7 @@
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
-					"uri": "[variables('nvaTemplateUrl2')]",
+					"uri": "[variables('spokeTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters": {
@@ -112,18 +103,14 @@
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetPrefix": {"value": "[parameters('config')['vnets'][1]['vnetPrefix']]"},
                     "vnetName": {"value": "[parameters('config')['vnets'][1]['vnetName']]"},
-                    "subnet1Name": {"value": "Inside"},
-                    "subnet1Prefix": {"value": "[parameters('config')['vnets'][1]['Inside']]"},
-                    "routetablename": {"value": "Azure-to-onprem-VMs"},
-                    "subnet2Name": {"value": "Outside"},
-                    "subnet2Prefix": {"value": "[parameters('config')['vnets'][1]['Outside']]"},
-                    "nvaName": {"value": "[parameters('config')['vnets'][1]['nvaName']]"},
-                    "nvaSize": {"value": "Standard_D2_v2"},
-                    "csr-lan-ip": {"value": "[parameters('azurecsr-lan-ip')]"},
-                    "csr-lan-ip-2": {"value": "[parameters('onpremvm-lan-ip')]"}, 
-					"vmName": {"value": "[parameters('config')['vnets'][1]['vmName']]"},
-                    "vmSize": {"value": "Standard_B1s"},
-                    "vm-lan-ip": {"value": "[parameters('azurevm-lan-ip')]"} 
+                    "subnet1Name": {"value": "FrontNet"},
+                    "subnet1Prefix": {"value": "[parameters('config')['vnets'][1]['FrontNet']]"},
+                    "subnet2Name": {"value": "AppNet"},
+                    "subnet2Prefix": {"value": "[parameters('config')['vnets'][1]['AppNet']]"},
+                    "subnet3Name": {"value": "DBNet"},
+                    "subnet3Prefix": {"value": "[parameters('config')['vnets'][1]['DBNet']]"},    
+					"vmName": {"value": "[parameters('config')['vnets'][0]['vmName']]"},
+                    "vmSize": {"value": "Standard_B1s"} 
                 }
             },
             "dependsOn": [
