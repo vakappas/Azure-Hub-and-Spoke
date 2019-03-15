@@ -44,7 +44,7 @@
         },
         "nvaName": {
             "type": "string",
-            "defaultValue": "myCsr"
+            "defaultValue": "NVA"
         },
         "nvaSize": {
             "type": "string",
@@ -149,7 +149,7 @@
                     "ip0": {"value": "[parameters('nvaip0')]"},
                     "ip1": {"value": "[parameters('nvaip1')]"},
                     "pipName":{"value": "asa-publicIP"},
-                    "vmName": {"value": "asafw"}
+                    "vmName": {"value": "[parameters('nvaName')]"}
                 }
             },
             "dependsOn": [
