@@ -28,7 +28,7 @@
                         "ServersNet01": "10.0.3.0/24",
                         "ServersNet02": "10.0.4.0/24",
                         "vmName": "hub-srv01",
-                        "nvaName": "asa",
+                        "nvaName": "asafw",
                         "nvaip0": "10.0.2.10",
                         "nvaip1": "10.0.1.10"
                     },
