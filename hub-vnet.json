@@ -148,7 +148,7 @@
                     "subnet1Name": { "value": "[parameters('subnet2Name')]"},
                     "ip0": {"value": "[parameters('nvaip0')]"},
                     "ip1": {"value": "[parameters('nvaip1')]"},
-                    "vmName": {"value": "[concat(parameters('vmName'), '1')]"},
+                    "vmName": {"value": "[concat(parameters('nvaName'), '1')]"},
                     "pipName":{"value": "asa-publicIP"}
                 }
             },

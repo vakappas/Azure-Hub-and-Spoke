@@ -29,8 +29,8 @@
                         "ServersNet02": "10.0.4.0/24",
                         "vmName": "hub-srv01",
                         "nvaName": "asa",
-                        "nvaip0": "10.0.1.10",
-                        "nvaip1": "10.0.2.10"
+                        "nvaip0": "10.0.2.10",
+                        "nvaip1": "10.0.1.10"
                     },
                     {
                         "vnetName": "spoke-vnet",
@@ -85,6 +85,7 @@
                 }
             },
             "dependsOn": [
+              
             ]
         },
 {
@@ -114,6 +115,7 @@
                 }
             },
             "dependsOn": [
+                "[variables('hub-vnet').vnetName]"
             ]   			
         }
     ]
