@@ -148,7 +148,7 @@
                     "subnet1Name": { "value": "[parameters('subnet2Name')]"},
                     "ip0": {"value": "[parameters('nvaip0')]"},
                     "ip1": {"value": "[parameters('nvaip1')]"},
-                    "vmName": {"value": "[concat(parameters('nvaName'), '1')]"},
+                    "vmName": {"value": "[parameters('nvaName')]"},
                     "pipName":{"value": "asa-publicIP"}
                 }
             },
@@ -172,7 +172,7 @@
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnetName": { "value": "[parameters('subnet3Name')]"},
-                    "vmName": {"value": "[concat(parameters('vmName'), '1')]"},
+                    "vmName": {"value": "[parameters('vmName')]"},
                     "vmSize": {"value": "[parameters('vmSize')]"},
                     "createPip":{"value": "yes"}
                 }
