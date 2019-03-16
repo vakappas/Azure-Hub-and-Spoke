@@ -47,3 +47,4 @@ url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/Hub-an
 # Running the deployment
 az group deployment create -g $rg --template-uri $url --parameters '{"adminPassword":{"value":"P@ssw0rd@2019"}, "adminUsername":{"value":"lab-user"}, "vnetName":{"value":"spoke-net"}, "subnetName":{"value":"subnet1"}}'
 az group deployment create -g $rg --template-uri $url --parameters '{"adminPassword":{"value":"P@ssw0rd@2019"}}'
+

@@ -106,7 +106,7 @@
                     "vnetPrefix": {"value": "[variables('spoke-vnet').vnetPrefix]"},
                     "vnetName": {"value": "[variables('spoke-vnet').vnetName]"},
                     "subnet1Name": {"value": "FrontNet"},
-                    "subnet1Prefix": {"value": "[variables('spoke-vnet').FrontEnd]"},
+                    "subnet1Prefix": {"value": "[variables('spoke-vnet').FrontNet]"},
                     "subnet2Name": {"value": "AppNet"},
                     "subnet2Prefix": {"value": "[variables('spoke-vnet').AppNet]"},
                     "subnet3Name": {"value": "DBNet"},
