@@ -202,7 +202,7 @@
         },
         {
 			"comments": "Create a Cisco CSR Router with 3nics and connect it to given vnet and subnets",
-			"name": "ASAv",
+			"name": "CSR",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {

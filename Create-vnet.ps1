@@ -8,7 +8,7 @@ Select-AzSubscription -Subscription "vakappas - Internal Consumption"
 # Create a Resource Group
 $RG = "hub-and-spoke-rg"
 $Location = "West Europe"
-$url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/hub-vnet.json"
+$url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Hub-net-2-firewalls-1-router/hub-vnet.json"
 
 ## url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/spoke-vnet.json
 $url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/Hub-and-Spoke.json"
