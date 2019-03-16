@@ -158,7 +158,7 @@
 				 "parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vmType": {"value": "[variables('asav').vmType]"},
+                    "vmType": {"value": "[variables('asav').nvaType]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnet0Name": { "value": "[parameters('subnet1Name')]"},
                     "subnet1Name": { "value": "[parameters('subnet2Name')]"},
@@ -186,7 +186,7 @@
 				 "parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vmType": {"value": "[variables('ftdv').vmType]"},
+                    "vmType": {"value": "[variables('ftdv').nvaType]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnet0Name": { "value": "[parameters('subnet1Name')]"},
                     "subnet1Name": { "value": "[parameters('subnet2Name')]"},
@@ -214,7 +214,7 @@
 				 "parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vmType": {"value": "[variables('csr').vmType]"},
+                    "vmType": {"value": "[variables('csr').nvaType]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnet0Name": { "value": "[parameters('subnet2Name')]"},
                     "subnet1Name": { "value": "[parameters('subnet3Name')]"},
