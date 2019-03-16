@@ -41,4 +41,4 @@ Get-AzVMImage -Location $loc -PublisherName "cisco" -Offer "cisco-ftdv" -Skus "f
 #Accept the terms
 $agreementTerms=Get-AzMarketplaceterms -Publisher "cisco" -Product "cisco-csr-1000v" -Name "csr-azure-byol"
 
-Set-AzMarketplaceTerms -Publisher "cisco" -Product "cisco-ftdv" -Name "ftdv-azure-byol" -Terms $agreementTerms -Accept
+Set-AzMarketplaceTerms -Publisher "cisco" -Product "cisco-csr-1000v" -Name "csr-azure-byol" -Terms $agreementTerms -Accept

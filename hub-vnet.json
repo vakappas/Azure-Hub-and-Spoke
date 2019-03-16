@@ -191,7 +191,7 @@
                     "subnet0Name": { "value": "[parameters('subnet1Name')]"},
                     "subnet1Name": { "value": "[parameters('subnet2Name')]"},
                     "ip0": {"value": "[variables('ftdv').nvaip0]"},
-                    "ip1": {"value": "[variables('ftdvv').nvaip1]"},
+                    "ip1": {"value": "[variables('ftdv').nvaip1]"},
                     "pipName":{"value": "ftdv-publicIP"},
                     "vmName": {"value": "[variables('ftdv').nvaName]"}
                 }
