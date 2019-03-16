@@ -91,7 +91,7 @@
         },
 {
 			"comments": "Simulate a number of vnets, each including two subnets, an Ubuntu VM and a CSR 1Kv NVA",
-			"name": "Azure",
+			"name": "spoke-vnet",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
