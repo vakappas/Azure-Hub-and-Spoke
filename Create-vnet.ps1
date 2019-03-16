@@ -11,9 +11,10 @@ $Location = "West Europe"
 $url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/hub-vnet.json"
 
 ## url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/spoke-vnet.json
-## url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/Hub-and-Spoke.json
+$url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/Hub-and-Spoke.json"
 
 New-AzResourceGroup -Name $RG -Location $Location
+
 $cred = Get-Credential
 $templateParameters = @{
 

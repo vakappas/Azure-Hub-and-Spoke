@@ -110,7 +110,7 @@
                     "subnet2Prefix": {"value": "[parameters('config')['vnets'][1]['AppNet']]"},
                     "subnet3Name": {"value": "DBNet"},
                     "subnet3Prefix": {"value": "[parameters('config')['vnets'][1]['DBNet']]"},    
-					"vmName": {"value": "[parameters('config')['vnets'][0]['vmName']]"},
+					"vmName": {"value": "[parameters('config')['vnets'][1]['vmName']]"},
                     "vmSize": {"value": "Standard_B1s"} 
                 }
             },
