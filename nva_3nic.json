@@ -47,12 +47,21 @@
             "defaultValue": "subnet2",
             "type": "string"
         },
+        "subnet2Name": {
+            "defaultValue": "subnet3",
+            "type": "string"
+        },
         "ip0": {
             "defaultValue": "10.0.0.10",
             "type": "string",
             "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
         },
         "ip1": {
+            "defaultValue": "10.0.1.10",
+            "type": "string",
+            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
+        },
+        "ip2": {
             "defaultValue": "10.0.1.10",
             "type": "string",
             "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
@@ -177,6 +186,12 @@
                             "properties": {
                                 "primary": false
                             }
+                        },
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName'), '-', copyIndex(1), '-nic2'))]",
+                            "properties": {
+                                "primary": false
+                            }
                         }
                     ]
                 }
@@ -188,7 +203,8 @@
             },
             "dependsOn": [
                 "[concat(parameters('vmName'), '-nic0')]",
-                "[concat(parameters('vmName'), '-nic1')]"
+                "[concat(parameters('vmName'), '-nic1')]",
+                "[concat(parameters('vmName'), '-nic2')]"
             ]
         },
 		{
@@ -238,6 +254,30 @@
             ],
             "copy": {
                 "name": "[concat(parameters('vmName'), '-nic1')]",
+                "count": "[parameters('vmCount')]"
+            }
+        },
+        {
+			"name": "[concat(parameters('vmName'), '-', copyIndex(1), '-nic2')]",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2016-06-01",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[uri(deployment().properties.templateLink.uri, 'nic_noNSG_noSLB_noPIP_static.json')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters":  {
+                    "nicName": {"value": "[concat(parameters('vmName'), '-', copyIndex(1), '-nic2')]"},
+                    "ipAddress": { "value": "[concat(parameters('ip2'), copyIndex(1))]" },                    
+                    "vnetName": { "value": "[parameters('vnetName')]" },
+                    "subnetName": { "value": "[parameters('subnet2Name')]"}
+                }
+            },
+            "dependsOn": [
+            ],
+            "copy": {
+                "name": "[concat(parameters('vmName'), '-nic2')]",
                 "count": "[parameters('vmCount')]"
             }
         }
