@@ -59,7 +59,7 @@
                         "nvaSize": "Standard_D3_v2",
                         "nvaip0": "10.0.1.12",
                         "nvaip1": "10.0.2.12",
-                        "nvaType": "ftd"
+                        "nvaType": "ftdv"
                     },
                     {
                         "nvaName": "CSR",
