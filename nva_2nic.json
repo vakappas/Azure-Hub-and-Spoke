@@ -146,7 +146,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat(parameters('vmName'),'-disk')]",
+                        "name": "[concat(parameters('vmName'), '-', copyIndex(1),'-disk')]",
                         "createOption": "FromImage",
                         "managedDisk": {
                             "storageAccountType": "[variables('nvaOsDiskType')]"
