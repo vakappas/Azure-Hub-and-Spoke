@@ -3,43 +3,43 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vnetName": {
-            "defaultValue": "hub-vnet",
+            "defaultValue": "TGN_HUB",
             "type": "string"
         },
         "vnetPrefix": {
-            "defaultValue": "10.0.0.0/16",
+            "defaultValue": "10.48.128.0/20",
             "type": "string"
         },
         "subnet1Name": {
-            "defaultValue": "subnet1",
+            "defaultValue": "TGN_AZR",
             "type": "string"
         },
         "subnet1Prefix": {
-            "defaultValue": "10.0.1.0/24",
+            "defaultValue": "10.48.128.0/24",
             "type": "string"
         },
         "subnet2Name": {
-            "defaultValue": "subnet2",
+            "defaultValue": "TGN_AZR_NMGMT",
             "type": "string"
         },
         "subnet2Prefix": {
-            "defaultValue": "10.0.2.0/24",
+            "defaultValue": "10.48.129.0/24",
             "type": "string"
         },
         "subnet3Name": {
-            "defaultValue": "subnet3",
+            "defaultValue": "TGN_AZR_SRVs1",
             "type": "string"
         },
         "subnet3Prefix": {
-            "defaultValue": "10.0.3.0/24",
+            "defaultValue": "10.48.130.0/24",
             "type": "string"
         },
         "subnet4Name": {
-            "defaultValue": "subnet4",
+            "defaultValue": "TGN_AZR_SRVs2",
             "type": "string"
         },
         "subnet4Prefix": {
-            "defaultValue": "10.0.4.0/24",
+            "defaultValue": "10.48.131.0/24",
             "type": "string"
         },
         "config": {
@@ -47,26 +47,26 @@
             "defaultValue": {
                 "NVAs": [
                     {
-                        "nvaName": "ASAv",
+                        "nvaName": "AZR_ASAv",
                         "nvaSize": "Standard_D2_v2",
-                        "nvaip0": "10.0.1.11",
-                        "nvaip1": "10.0.2.11",
+                        "nvaip0": "10.48.128.100",
+                        "nvaip1": "10.48.129.100",
                         "nvaType": "asa"
                         
                     },
                     {
-                        "nvaName": "FTDv",
+                        "nvaName": "AZR_FTDv",
                         "nvaSize": "Standard_D3_v2",
-                        "nvaip0": "10.0.1.12",
-                        "nvaip1": "10.0.2.12",
+                        "nvaip0": "10.48.128.250",
+                        "nvaip1": "10.48.129.250",
                         "nvaType": "ftdv"
                     },
                     {
-                        "nvaName": "CSR",
+                        "nvaName": "AZR_CSR",
                         "nvaSize": "Standard_D3_v2",
-                        "nvaip0": "10.0.2.21",
-                        "nvaip1": "10.0.3.21",
-                        "nvaip2": "10.0.4.21",
+                        "nvaip0": "10.48.129.254",
+                        "nvaip1": "10.48.130.254",
+                        "nvaip2": "10.48.131.254",
                         "nvaType": "csr"
                     }
                 ]
