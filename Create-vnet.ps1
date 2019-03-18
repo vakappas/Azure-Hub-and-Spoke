@@ -6,7 +6,7 @@ Select-AzSubscription -Subscription "vakappas - Internal Consumption"
 
 #Deploy VM to Azure using Template
 # Create a Resource Group
-$RG = "hub-and-spoke-rg"
+$RG = "Titan-Hub-rg"
 $Location = "West Europe"
 $url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Hub-net-2-firewalls-1-router/hub-vnet.json"
 
