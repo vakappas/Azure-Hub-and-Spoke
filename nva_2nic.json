@@ -193,7 +193,7 @@
         },
 		{
 			"comments": "Deploy the virtual interfaces",
-            "name": "[concat(parameters('vmName'), '-', copyIndex(1), '-nic0')]",
+            "name": "[concat(parameters('vmName'), '-nic0')]",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "2016-06-01",
 			"properties": {
@@ -203,7 +203,7 @@
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters":  {
-                    "nicName": {"value": "[concat(parameters('vmName'), '-', copyIndex(1), '-nic0')]"},
+                    "nicName": {"value": "[concat(parameters('vmName'), '-nic0')]"},
                     "ipAddress": { "value": "[parameters('ip0')]" },                    
                     "vnetName": { "value": "[parameters('vnetName')]" },
                     "subnetName": { "value": "[parameters('subnet0Name')]"},
@@ -218,7 +218,7 @@
             }
         },
 		{
-			"name": "[concat(parameters('vmName'), '-', copyIndex(1), '-nic1')]",
+			"name": "[concat(parameters('vmName'), '-nic1')]",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "2016-06-01",
 			"properties": {
@@ -228,7 +228,7 @@
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters":  {
-                    "nicName": {"value": "[concat(parameters('vmName'), '-', copyIndex(1), '-nic1')]"},
+                    "nicName": {"value": "[concat(parameters('vmName'), '-nic1')]"},
                     "ipAddress": { "value": "[parameters('ip1')]" },                    
                     "vnetName": { "value": "[parameters('vnetName')]" },
                     "subnetName": { "value": "[parameters('subnet1Name')]"}
