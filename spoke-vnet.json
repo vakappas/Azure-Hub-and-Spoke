@@ -97,7 +97,7 @@
         },
         {
 			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
-			"name": "UbuntuVM",
+			"name": "1stUbuntuVM",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -122,7 +122,7 @@
         },
         {
 			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
-			"name": "UbuntuVM",
+			"name": "2ndUbuntuVM",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
