@@ -102,7 +102,7 @@
             },
             "ftdv": {
                 "planName": "ftdv-azure-byol",
-                "product": "cisco-ftdv",
+                "product": "Ucisco-ftdv",
                 "publisher": "cisco",
                 "sku": "ftdv-azure-byol",
                 "vmSize": "Standard_D3_v2"

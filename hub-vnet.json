@@ -47,7 +47,7 @@
             "defaultValue": {
                 "NVAs": [
                     {
-                        "nvaName": "AZR-ASAv",
+                        "nvaName": "AZR_ASAv",
                         "nvaSize": "Standard_D2_v2",
                         "nvaip0": "10.48.128.100",
                         "nvaip1": "10.48.129.100",
@@ -55,14 +55,14 @@
                         
                     },
                     {
-                        "nvaName": "AZR-FTDv",
+                        "nvaName": "AZR_FTDv",
                         "nvaSize": "Standard_D3_v2",
                         "nvaip0": "10.48.128.250",
                         "nvaip1": "10.48.129.250",
                         "nvaType": "ftdv"
                     },
                     {
-                        "nvaName": "AZR-CSR",
+                        "nvaName": "AZR_CSR",
                         "nvaSize": "Standard_D3_v2",
                         "nvaip0": "10.48.129.254",
                         "nvaip1": "10.48.130.254",
