@@ -119,6 +119,31 @@
             "dependsOn": [
                 "[parameters('vnetName')]"
             ]
+        },
+        {
+			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
+			"name": "UbuntuVM",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('vmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet3Name')]"},
+                    "vmName": {"value": "[parameters('vmName')]"},
+                    "vmSize": {"value": "[parameters('vmSize')]"},
+                    "createPip":{"value": "no"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
         }
      ],
     "outputs": {
