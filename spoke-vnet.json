@@ -38,6 +38,10 @@
             "type": "string",
             "defaultValue": "myVm"
         },
+        "RouterName": {
+            "type": "string",
+            "defaultValue": "RouterVM"
+        },
         "vmSize": {
             "type": "string",
             "defaultValue": "Standard_B1s"
@@ -97,7 +101,7 @@
         },
         {
 			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
-			"name": "1stUbuntuVM",
+			"name": "Router",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -111,7 +115,7 @@
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnetName": { "value": "[parameters('subnet1Name')]"},
-                    "vmName": {"value": "[parameters('vmName')]"},
+                    "vmName": {"value": "[parameters('RouterName')]"},
                     "vmSize": {"value": "[parameters('vmSize')]"},
                     "createPip":{"value": "yes"}
                 }
@@ -122,7 +126,7 @@
         },
         {
 			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
-			"name": "2ndUbuntuVM",
+			"name": "UbuntuVM",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
