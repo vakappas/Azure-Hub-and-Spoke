@@ -6,7 +6,7 @@ Select-AzSubscription -Subscription "vakappas - Internal Consumption"
 
 #Deploy VM to Azure using Template
 # Create a Resource Group
-$RG = "2VNETs-2VMs-RG"
+$RG = "2VNETs-RG"
 $Location = "West Europe"
 $url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Two-VNETs-Two-VMs/spoke-vnet.json"
 
