@@ -28,19 +28,19 @@
                         "LAN": "10.1.0.128/26",
                         "vmName": "vnet1-srv01",
                         "nvaName": "vnet1-nva",
-                        "nvaip0": "10.0.1.10",
-                        "nvaip1": "10.0.2.10"
+                        "nvaip0": "10.1.0.11",
+                        "nvaip1": "10.1.0.71"
                     },
                     {
                         "vnetName": "vnet2",
-                        "vnetPrefix": "10.1.0.0/24",
-                        "EXT": "10.1.0.0/26",
-                        "DMZ": "10.1.0.64/26",
-                        "LAN": "10.1.0.128/26",
-                        "vmName": "sp-srv01",
-                        "nvaName": "asafw",
-                        "nvaip0": "10.0.1.10",
-                        "nvaip1": "10.0.2.10"
+                        "vnetPrefix": "10.2.0.0/24",
+                        "EXT": "10.2.0.0/26",
+                        "DMZ": "10.2.0.64/26",
+                        "LAN": "10.2.0.128/26",
+                        "vmName": "vnet2-srv01",
+                        "nvaName": "vnet2-nva",
+                        "nvaip0": "10.2.0.11",
+                        "nvaip1": "10.2.0.71"
                     }
                 ]
             }
