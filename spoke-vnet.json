@@ -38,13 +38,32 @@
             "type": "string",
             "defaultValue": "myVm"
         },
-        "RouterName": {
+        "nvaName": {
             "type": "string",
-            "defaultValue": "RouterVM"
+            "defaultValue": "nva"
         },
         "vmSize": {
             "type": "string",
             "defaultValue": "Standard_B1s"
+        },
+        "nvaSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "nvaType": {
+            "defaultValue": "csr",
+            "type": "string",
+            "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
+        },
+        "ip0": {
+            "defaultValue": "192.168.100.11",
+            "type": "string",
+            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
+        },
+        "ip1": {
+            "defaultValue": "192.168.100.71",
+            "type": "string",
+            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
         },
         "adminUsername": {
             "type": "string",
@@ -59,7 +78,8 @@
         "computeApiVersion": "2018-06-01",
         "storageApiVersion": "2018-07-01",
         "deploymentApiVersion": "2017-05-10",
-        "vmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]"
+        "vmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
+        "nvaTemplateUri": "[uri(deployment().properties.templateLink.uri,'nva_2nic.json')]"
    },
     "resources": [
         {
@@ -96,28 +116,31 @@
 				]
             },
             "resources": [],
-            "dependsOn": [
-            ]
+            "dependsOn": [ ]
         },
         {
-			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
-			"name": "Router",
+        
+			"comments": "Create a Linux VM as an NVA with 2nics and connect it to given vnet and subnets",
+			"name": "UbuntuNVA",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
-					"uri": "[variables('vmTemplateUri')]",
+					"uri": "[variables('nvaTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
 				 "parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vmType": {"value": "[parameters('nvaType')]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
-                    "subnetName": { "value": "[parameters('subnet1Name')]"},
-                    "vmName": {"value": "[parameters('RouterName')]"},
-                    "vmSize": {"value": "[parameters('vmSize')]"},
-                    "createPip":{"value": "yes"}
+                    "subnet0Name": { "value": "[parameters('subnet1Name')]"},
+                    "subnet1Name": { "value": "[parameters('subnet2Name')]"},
+                    "ip0": {"value": "[parameters('ip0')]"},
+                    "ip1": {"value": "[parameters('ip1')]"},
+                    "pipName":{"value": "[concat(parameters('nvaName'), '-pip')]"},
+                    "vmName": {"value": "[parameters('nvaName')]"}
                 }
             },
             "dependsOn": [

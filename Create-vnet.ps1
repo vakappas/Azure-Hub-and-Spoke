@@ -34,8 +34,8 @@ Remove-AzResourceGroup -Name $RG -Force
 $loc = 'westeurope' #first set a location
 #View the templates available
 Get-AzVMImagePublisher -Location $loc #check all the publishers available
-Get-AzVMImageOffer -Location $loc -PublisherName "cisco" #look for offers for a publisher
-Get-AzVMImageSku -Location $loc -PublisherName "cisco" -Offer "cisco-csr-1000v" #view SKUs for an offer
+Get-AzVMImageOffer -Location $loc -PublisherName "canonical" #look for offers for a publisher
+Get-AzVMImageSku -Location $loc -PublisherName "canonical" -Offer "UbuntuServer" #view SKUs for an offer
 Get-AzVMImage -Location $loc -PublisherName "cisco" -Offer "cisco-ftdv" -Skus "ftdv-azure-byol" #pick one!
 
 #Accept the terms

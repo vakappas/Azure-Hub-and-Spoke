@@ -17,7 +17,7 @@
         "vmType": {
             "defaultValue": "csr",
             "type": "string",
-            "allowedValues": ["csr", "ftdv", "asa"]
+            "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
         },
         "vmCount": {
             "defaultValue": 1,
@@ -97,6 +97,13 @@
                 "publisher": "cisco",
                 "sku": "ftdv-azure-byol",
                 "vmSize": "Standard_D3_v2"
+            },            
+            "ubuntu": {
+                "planName": "UbuntuServer",
+                "product": "UbuntuServer",
+                "publisher": "canonical",
+                "sku": "16.04.0-LTS",
+                "vmSize": "Standard_D2_v2"
             }
         },
         "settings": "[variables('settingsTable')[parameters('vmType')]]",
