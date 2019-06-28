@@ -86,7 +86,7 @@
                 }
             },
             "dependsOn": [
-                "[variables('first-vnet').vnetName]"
+
             ]
         },
 {
@@ -120,7 +120,7 @@
                 }
             },
             "dependsOn": [
-                "[variables('second-vnet').vnetName]"
+
             ]   			
         }
     ]
