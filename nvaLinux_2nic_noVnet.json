@@ -209,7 +209,7 @@
 			"comments": "Availability set for eventual NVA HA",
 			"type": "Microsoft.Compute/availabilitySets",
 			"name": "[variables('avSetName')]",
-			"apiVersion": "2016-03-30",
+			"apiVersion": "2016-04-30-preview",
             "location": "[resourceGroup().location]",
             "sku":{
                 "name": "Aligned"
