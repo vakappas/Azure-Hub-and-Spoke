@@ -79,7 +79,7 @@
         "storageApiVersion": "2018-07-01",
         "deploymentApiVersion": "2017-05-10",
         "vmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
-        "nvaTemplateUri": "[uri(deployment().properties.templateLink.uri,'nva_2nic.json')]"
+        "nvaTemplateUri": "[if(equals(parameters('nvaType'), 'ubuntu'),uri(deployment().properties.templateLink.uri,'nvaLinux_2nic_noVnet.json'),uri(deployment().properties.templateLink.uri,'nva_2nic.json') )]"
    },
     "resources": [
         {

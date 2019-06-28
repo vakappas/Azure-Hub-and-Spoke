@@ -34,12 +34,11 @@ Remove-AzResourceGroup -Name $RG -Force
 $loc = 'westeurope' #first set a location
 #View the templates available
 Get-AzVMImagePublisher -Location $loc #check all the publishers available
-Get-AzVMImageOffer -Location $loc -PublisherName "canonical" #look for offers for a publisher
+Get-AzVMImageOffer -Location $loc -PublisherName "canonical" | Get-AzVMImageSku #look for offers for a publisher
 Get-AzVMImageSku -Location $loc -PublisherName "canonical" -Offer "UbuntuServer" #view SKUs for an offer
 Get-AzVMImage -Location $loc -PublisherName "canonical" -Offer "UbuntuServer" -Skus "16.04.0-LTS" #pick one!
 
 #Accept the terms
-$agreementTerms=Get-AzMarketplaceterms -Publisher "canonical" -Product "UbuntuServer" -Name "16.04.0-LTS"
-
+$agreementTerms=Get-AzMarketplaceterms -Publisher "Canonical" -Product "UbuntuServer" -Name "16.04.0-LTS"
 Set-AzMarketplaceTerms -Publisher "cisco" -Product "cisco-csr-1000v" -Name "csr-azure-byol" -Terms $agreementTerms -Accept
 
