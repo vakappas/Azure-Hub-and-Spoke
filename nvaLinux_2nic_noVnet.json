@@ -210,7 +210,17 @@
 			"type": "Microsoft.Compute/availabilitySets",
 			"name": "[variables('avSetName')]",
 			"apiVersion": "2016-03-30",
-			"location": "[resourceGroup().location]"
+            "location": "[resourceGroup().location]",
+            "sku":{
+                "name": "Aligned"
+            },
+            "tags": {
+
+            },
+            "properties":{
+                "platformUpdateDomainCount": 1,
+                "platformFaultDomainCount": 1
+            }
 		},
 		{
 			"comments": "Optionally, create an internal load balancer",
