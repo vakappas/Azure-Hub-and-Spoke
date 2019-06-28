@@ -49,7 +49,6 @@
     "variables": {
         "networkApiVersion": "2018-08-01",
         "deploymentApiVersion": "2017-05-10",
-        "hubTemplateUri": "[uri(deployment().properties.templateLink.uri, 'hub-vnet.json')]",
         "spokeTemplateUri": "[uri(deployment().properties.templateLink.uri, 'spoke-vnet.json')]",
         "first-vnet":"[parameters('config')['vnets'][0]]",
         "second-vnet": "[parameters('config')['vnets'][1]]"
@@ -69,19 +68,21 @@
 				"parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vnetPrefix": {"value": "[variables('first-vnet').vnetPrefix]"},
                     "vnetName": {"value": "[variables('first-vnet').vnetName]"},
+                    "vnetPrefix": {"value": "[variables('first-vnet').vnetPrefix]"},                    
                     "subnet1Name": {"value": "EXT"},
                     "subnet1Prefix": {"value": "[variables('first-vnet').EXT]"},
                     "subnet2Name": {"value": "DMZ"},
                     "subnet2Prefix": {"value": "[variables('first-vnet').DMZ]"},
                     "subnet3Name": {"value": "LAN"},
-                    "subnet3Prefix": {"value": "[variables('first-vnet').LAN]"},                    
+                    "subnet3Prefix": {"value": "[variables('first-vnet').LAN]"},
+                    "vmName": {"value": "[variables('first-vnet').vmName]"},
+                    "vmSize": {"value": "Standard_B1s"},                
                     "nvaName": {"value": "[variables('first-vnet').nvaName]"},
                     "nvaSize": {"value": "Standard_B1s"},
+                    "nvaType": {"value": "[variables('first-vnet').nvatype]"},
                     "nvaip0": {"value": "[variables('first-vnet').nvaip0]"},
-                    "nvaip1": {"value": "[variables('first-vnet').nvaip1]"},                               
-                    "vmSize": {"value": "Standard_B1s"}
+                    "nvaip1": {"value": "[variables('first-vnet').nvaip1]"}              
                 }
             },
             "dependsOn": [
@@ -89,7 +90,7 @@
             ]
         },
 {
-			"comments": "Simulate a number of vnets, each including two subnets, an Ubuntu VM and a CSR 1Kv NVA",
+			"comments": "Create a VNET with an NVA and a VM",
 			"name": "vnet2",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
@@ -102,19 +103,20 @@
 				"parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vnetPrefix": {"value": "[variables('second-vnet').vnetPrefix]"},
                     "vnetName": {"value": "[variables('second-vnet').vnetName]"},
+                    "vnetPrefix": {"value": "[variables('second-vnet').vnetPrefix]"},                    
                     "subnet1Name": {"value": "EXT"},
                     "subnet1Prefix": {"value": "[variables('second-vnet').EXT]"},
                     "subnet2Name": {"value": "DMZ"},
                     "subnet2Prefix": {"value": "[variables('second-vnet').DMZ]"},
                     "subnet3Name": {"value": "LAN"},
-                    "subnet3Prefix": {"value": "[variables('second-vnet').LAN]"},                    
+                    "subnet3Prefix": {"value": "[variables('second-vnet').LAN]"},
+                    "vmName": {"value": "[variables('second-vnet').vmName]"},                              
+                    "vmSize": {"value": "Standard_B1s"},                   
                     "nvaName": {"value": "[variables('second-vnet').nvaName]"},
                     "nvaSize": {"value": "Standard_B1s"},
                     "nvaip0": {"value": "[variables('second-vnet').nvaip0]"},
-                    "nvaip1": {"value": "[variables('second-vnet').nvaip1]"},                               
-                    "vmSize": {"value": "Standard_B1s"}
+                    "nvaip1": {"value": "[variables('second-vnet').nvaip1]"}
                 }
             },
             "dependsOn": [
