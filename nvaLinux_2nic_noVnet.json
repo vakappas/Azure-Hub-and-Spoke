@@ -27,7 +27,7 @@
             "defaultValue": "myNva",
             "type": "string"
         },
-        "vmUsr": {
+        "adminUsername": {
             "defaultValue": "myadmin",
             "type": "string"
         },
@@ -35,7 +35,7 @@
             "defaultValue": "Standard_B2ms",
             "type": "string"
         },
-        "vmPwd": {
+        "adminPassword": {
             "defaultValue": null,
             "type": "securestring"
         },
@@ -88,6 +88,8 @@
         }
     },
     "variables": {
+        "computeApiVersion": "2018-06-01",
+        "OsDiskType": "StandardSSD_LRS",
         "nicTemplatePipNsg": "[uri(deployment().properties.templateLink.uri, 'nic_NSG_noSLB_PIP_static.json')]",
         "nicTemplateNoPipNsg": "[uri(deployment().properties.templateLink.uri, 'nic_NSG_noSLB_noPIP_static.json')]",
         "nicTemplateNoPipNoNsg": "[uri(deployment().properties.templateLink.uri, 'nic_noNSG_noSLB_noPIP_static.json')]",
@@ -245,7 +247,7 @@
             "comments": "Deploy Linux VM as Virtual Network Appliance",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(parameters('vmName'), '-', copyIndex(1))]",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "[variables('computeApiVersion')]",
             "location": "[resourceGroup().location]",
             "properties": {
 				"availabilitySet": {
@@ -264,8 +266,8 @@
                     "osDisk": {
                         "name": "[concat(parameters('vmName'), '-', copyIndex(1),'-disk')]",
                         "createOption": "FromImage",
-                        "vhd": {
-                            "uri": "[concat('http', '://', parameters('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('vmName'), '-', copyIndex(1),'-disk.vhd'))]"
+                        "managedDisk": {
+                            "storageAccountType": "[variables('OsDiskType')]"
                         },
                         "caching": "ReadWrite"
                     },
@@ -273,12 +275,12 @@
                 },
                 "osProfile": {
                     "computerName": "[concat(parameters('vmName'), '-', copyIndex(1))]",
-                    "adminUsername": "[parameters('vmUsr')]",
+                    "adminUsername": "[parameters('adminUsername')]",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": false
                     },
                     "secrets": [],
-                    "adminPassword": "[parameters('vmPwd')]"
+                    "adminPassword": "[parameters('adminPassword')]"
                 },
                 "networkProfile": {
                     "networkInterfaces": [
