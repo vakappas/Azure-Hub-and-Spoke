@@ -54,7 +54,7 @@
         "networkApiVersion": "2018-08-01",
         "deploymentApiVersion": "2017-05-10",
         "spokeTemplateUri": "[uri(deployment().properties.templateLink.uri, 'spoke-vnet.json')]",
-        "first-vnet":"[parameters('config')['vnets'][0]]",
+        "first-vnet": "[parameters('config')['vnets'][0]]",
         "second-vnet": "[parameters('config')['vnets'][1]]"
     },
     "resources": [
@@ -91,7 +91,7 @@
                 }
             },
             "dependsOn": [
-
+                "[variables('first-vnet').vnetName]"
             ]
         },
         {
@@ -127,6 +127,7 @@
                 }
             },
             "dependsOn": [
+                "[variables('second-vnet').vnetName]"
 
             ]   			
         }
