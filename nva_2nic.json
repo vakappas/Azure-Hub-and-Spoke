@@ -99,9 +99,9 @@
                 "vmSize": "Standard_D3_v2"
             },            
             "ubuntu": {
-                "planName": "UbuntuServer",
+                "planName": "Ubuntu Server 16.04 LTS",
                 "product": "UbuntuServer",
-                "publisher": "canonical",
+                "publisher": "Canonical",
                 "sku": "16.04.0-LTS",
                 "vmSize": "Standard_D2_v2"
             }

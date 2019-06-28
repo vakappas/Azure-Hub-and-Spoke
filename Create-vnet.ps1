@@ -36,9 +36,10 @@ $loc = 'westeurope' #first set a location
 Get-AzVMImagePublisher -Location $loc #check all the publishers available
 Get-AzVMImageOffer -Location $loc -PublisherName "canonical" #look for offers for a publisher
 Get-AzVMImageSku -Location $loc -PublisherName "canonical" -Offer "UbuntuServer" #view SKUs for an offer
-Get-AzVMImage -Location $loc -PublisherName "cisco" -Offer "cisco-ftdv" -Skus "ftdv-azure-byol" #pick one!
+Get-AzVMImage -Location $loc -PublisherName "canonical" -Offer "UbuntuServer" -Skus "16.04.0-LTS" #pick one!
 
 #Accept the terms
-$agreementTerms=Get-AzMarketplaceterms -Publisher "cisco" -Product "cisco-csr-1000v" -Name "csr-azure-byol"
+$agreementTerms=Get-AzMarketplaceterms -Publisher "canonical" -Product "UbuntuServer" -Name "16.04.0-LTS"
 
 Set-AzMarketplaceTerms -Publisher "cisco" -Product "cisco-csr-1000v" -Name "csr-azure-byol" -Terms $agreementTerms -Accept
+
