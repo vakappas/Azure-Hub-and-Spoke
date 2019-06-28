@@ -28,6 +28,7 @@
                         "LAN": "10.1.0.128/26",
                         "vmName": "vnet1-srv01",
                         "nvaName": "vnet1-nva",
+                        "nvaType": "ubuntu",
                         "nvaip0": "10.1.0.11",
                         "nvaip1": "10.1.0.71"
                     },
@@ -39,6 +40,7 @@
                         "LAN": "10.2.0.128/26",
                         "vmName": "vnet2-srv01",
                         "nvaName": "vnet2-nva",
+                        "nvaType": "ubuntu",
                         "nvaip0": "10.2.0.11",
                         "nvaip1": "10.2.0.71"
                     }
@@ -91,7 +93,7 @@
         },
         {
 			"comments": "Create a VNET with an NVA and a VM",
-			"name": "vnet2",
+			"name": "West",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
