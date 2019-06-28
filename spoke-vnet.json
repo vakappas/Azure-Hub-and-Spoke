@@ -121,7 +121,7 @@
         {
         
 			"comments": "Create a Linux VM as an NVA with 2nics and connect it to given vnet and subnets",
-			"name": "UbuntuNVA",
+			"name": "NVA",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -139,6 +139,7 @@
                     "subnet1Name": { "value": "[parameters('subnet2Name')]"},
                     "ip0": {"value": "[parameters('nvaip0')]"},
                     "ip1": {"value": "[parameters('nvaip1')]"},
+                    "createPip": {"value": "yes"},
                     "pipName":{"value": "[concat(parameters('nvaName'), '-pip')]"},
                     "vmName": {"value": "[parameters('nvaName')]"}
                 }

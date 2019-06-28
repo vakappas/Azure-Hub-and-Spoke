@@ -30,7 +30,8 @@
                         "nvaName": "vnet1-nva",
                         "nvaType": "ubuntu",
                         "nvaip0": "10.1.0.11",
-                        "nvaip1": "10.1.0.71"
+                        "nvaip1": "10.1.0.71",
+                        "createPip": "yes"
                     },
                     {
                         "vnetName": "vnet2",
@@ -42,7 +43,8 @@
                         "nvaName": "vnet2-nva",
                         "nvaType": "ubuntu",
                         "nvaip0": "10.2.0.11",
-                        "nvaip1": "10.2.0.71"
+                        "nvaip1": "10.2.0.71",
+                        "createPip": "yes"
                     }
                 ]
             }
@@ -84,7 +86,8 @@
                     "nvaSize": {"value": "Standard_B1s"},
                     "nvaType": {"value": "[variables('first-vnet').nvatype]"},
                     "nvaip0": {"value": "[variables('first-vnet').nvaip0]"},
-                    "nvaip1": {"value": "[variables('first-vnet').nvaip1]"}              
+                    "nvaip1": {"value": "[variables('first-vnet').nvaip1]"},
+                    "createPip": {"value": "[variables('first-vnet').createPip]"}           
                 }
             },
             "dependsOn": [
@@ -119,7 +122,8 @@
                     "nvaSize": {"value": "Standard_B1s"},
                     "nvaType": {"value": "[variables('second-vnet').nvatype]"},
                     "nvaip0": {"value": "[variables('second-vnet').nvaip0]"},
-                    "nvaip1": {"value": "[variables('second-vnet').nvaip1]"}
+                    "nvaip1": {"value": "[variables('second-vnet').nvaip1]"},
+                    "createPip": {"value": "[variables('second-vnet').createPip]"}
                 }
             },
             "dependsOn": [
