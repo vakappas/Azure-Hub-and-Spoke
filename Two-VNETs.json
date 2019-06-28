@@ -117,6 +117,7 @@
                     "vmSize": {"value": "Standard_B1s"},                   
                     "nvaName": {"value": "[variables('second-vnet').nvaName]"},
                     "nvaSize": {"value": "Standard_B1s"},
+                    "nvaType": {"value": "[variables('second-vnet').nvatype]"},
                     "nvaip0": {"value": "[variables('second-vnet').nvaip0]"},
                     "nvaip1": {"value": "[variables('second-vnet').nvaip1]"}
                 }
