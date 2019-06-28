@@ -56,7 +56,7 @@
     "resources": [
 		{
 			"comments": "Create a VNET with an NVA and a VM",
-			"name": "vnet1",
+			"name": "East",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -89,7 +89,7 @@
 
             ]
         },
-{
+        {
 			"comments": "Create a VNET with an NVA and a VM",
 			"name": "vnet2",
             "type": "Microsoft.Resources/deployments",
