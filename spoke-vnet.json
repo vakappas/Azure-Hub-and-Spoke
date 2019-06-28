@@ -65,6 +65,11 @@
             "type": "string",
             "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
         },
+        "createPip": {
+            "defaultValue": "no",
+            "type": "string",
+            "allowedValues": ["yes", "no"]
+        },
         "adminUsername": {
             "type": "string",
             "defaultValue": "lab-user"
@@ -139,7 +144,7 @@
                     "subnet1Name": { "value": "[parameters('subnet2Name')]"},
                     "ip0": {"value": "[parameters('nvaip0')]"},
                     "ip1": {"value": "[parameters('nvaip1')]"},
-                    "createPip": {"value": "yes"},
+                    "createPip": {"value": "[parameters('createPip')]"},
                     "pipName":{"value": "[concat(parameters('nvaName'), '-pip')]"},
                     "vmName": {"value": "[parameters('nvaName')]"}
                 }
