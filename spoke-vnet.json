@@ -126,7 +126,7 @@
         {
         
 			"comments": "Create a Linux VM as an NVA with 2nics and connect it to given vnet and subnets",
-			"name": "NVA",
+			"name": "[parameters('nvaName')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -155,7 +155,7 @@
         },
         {
 			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
-			"name": "UbuntuVM",
+			"name": "[parameters('vmName')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
