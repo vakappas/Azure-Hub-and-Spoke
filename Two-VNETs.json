@@ -41,7 +41,7 @@
                         "LAN": "10.2.0.128/26",
                         "vmName": "vnet2-srv01",
                         "nvaName": "vnet2-nva",
-                        "nvaType": "ubuntu",
+                        "nvaType": "csr",
                         "nvaip0": "10.2.0.11",
                         "nvaip1": "10.2.0.71",
                         "createPip": "yes"

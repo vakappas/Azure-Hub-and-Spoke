@@ -6,7 +6,7 @@ Select-AzSubscription -Subscription "vakappas - Internal Consumption"
 
 #Deploy VM to Azure using Template
 # Create a Resource Group
-$RG = "2VNETs-RG"
+$RG = "IPIP-LAB-RG"
 $Location = "West Europe"
 $url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Two-VNETs-Two-VMs/Two-VNETs.json"
 
@@ -24,7 +24,7 @@ $templateParameters = @{
 }
 
 
-New-AzResourceGroupDeployment -Name vnets -ResourceGroupName $RG -TemplateUri $url -TemplateParameterObject $templateParameters
+New-AzResourceGroupDeployment -Name ipiplab -ResourceGroupName $RG -TemplateUri $url -TemplateParameterObject $templateParameters
 #connect to VM using RDP
     mstsc /v:((Get-AzPublicIpAddress -ResourceGroupName $rg).IpAddress)
 
