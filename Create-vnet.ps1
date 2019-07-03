@@ -6,7 +6,7 @@ Select-AzSubscription -Subscription "vakappas - Internal Consumption"
 
 #Deploy VM to Azure using Template
 # Create a Resource Group
-$RG = "IPIP-LAB-RG"
+$RG = "GRETunnel-LAB-RG"
 $Location = "West Europe"
 $url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Two-VNETs-Two-VMs/Two-VNETs.json"
 
@@ -29,6 +29,8 @@ New-AzResourceGroupDeployment -Name ipiplab -ResourceGroupName $RG -TemplateUri 
     mstsc /v:((Get-AzPublicIpAddress -ResourceGroupName $rg).IpAddress)
 
 Remove-AzResourceGroup -Name $RG -Force
+
+Get-AzPublicIpAddress -ResourceGroupName $RG | Select Name, IpAddress
 
 #Working with Images
 $loc = 'westeurope' #first set a location

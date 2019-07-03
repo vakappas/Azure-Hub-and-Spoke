@@ -105,6 +105,12 @@
                 "publisher": "Canonical",
                 "sku": "18.04-LTS",
                 "vmSize": "[parameters('vmSize')]"
+            },
+            "centos": {
+                "product": "CentOS",
+                "publisher": "openlogic",
+                "sku": "7.6",
+                "vmSize": "[parameters('vmSize')]"
             }
         },
         "settings": "[variables('settingsTable')[parameters('vmType')]]",
