@@ -57,6 +57,12 @@
             "type": "string",
             "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
         },
+        "createPip": {
+            "defaultValue": "no",
+            "type": "string",
+            "metadata": { "description": "Not used, included for parameter-compatibility with nvaLinux_2nic_noVnet.json" } ,
+            "allowedValues": ["yes", "no"]
+        },
         "scriptUri": {
             "defaultValue": "",
             "type": "string",
