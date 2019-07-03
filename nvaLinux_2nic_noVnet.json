@@ -103,7 +103,7 @@
             "ubuntu": {
                 "product": "UbuntuServer",
                 "publisher": "Canonical",
-                "sku": "16.04.0-LTS",
+                "sku": "18.04-LTS",
                 "vmSize": "[parameters('vmSize')]"
             }
         },
