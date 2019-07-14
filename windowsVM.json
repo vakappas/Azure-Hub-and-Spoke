@@ -56,7 +56,7 @@
         "nicTemplateURI": "[variables('nicTemplateUriHash')[parameters('createPip')]]",
         "skuDataTable": {
             "ws2016": {
-                "sku": "2016-Datacenter",
+                "sku": "2016-Datacenter-smalldisk",
                 "publisher": "MicrosoftWindowsServer",
                 "offer": "WindowsServer",
                 "size": "[parameters('vmSize')]"
@@ -83,8 +83,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "createOption": "FromImage",
-                        "diskSizeGB": 64
+                        "createOption": "FromImage"
                     },
                     "dataDisks": []
                 },
