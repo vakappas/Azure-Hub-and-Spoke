@@ -46,35 +46,20 @@
             "defaultValue": "10.0.0.128/27",
             "type": "string"
         },
-        "config": {
-            "type": "object",
-            "defaultValue": {
-                "NVAs": [
-                    {
-                        "nvaName": "NVA-01",
-                        "nvaSize": "Standard_D2s_v3",
-                        "nvaip0": "10.0.0.41",
-                        "nvaip1": "10.0.0.71",
-                        "nvaType": "ubuntu"
-                        
-                    },
-                    {
-                        "nvaName": "AZR_FTDv",
-                        "nvaSize": "Standard_D3_v2",
-                        "nvaip0": "10.48.128.250",
-                        "nvaip1": "10.48.129.250",
-                        "nvaType": "ftdv"
-                    },
-                    {
-                        "nvaName": "AZR_CSR",
-                        "nvaSize": "Standard_D3_v2",
-                        "nvaip0": "10.48.129.254",
-                        "nvaip1": "10.48.130.254",
-                        "nvaip2": "10.48.131.254",
-                        "nvaType": "csr"
-                    }
-                ]
-            }
+        "nvaType": {
+            "defaultValue": "csr",
+            "type": "string",
+            "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
+        },
+        "nvaip0": {
+            "defaultValue": "192.168.100.11",
+            "type": "string",
+            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
+        },
+        "nvaip1": {
+            "defaultValue": "192.168.100.71",
+            "type": "string",
+            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
         },
         "createGw": {
             "defaultValue": "no",
@@ -126,10 +111,7 @@
         "nvaTemplateUri": "[if(equals(parameters('nvaType'), 'ubuntu'),uri(deployment().properties.templateLink.uri,'nvaLinux_2nic_noVnet.json'),uri(deployment().properties.templateLink.uri,'nva_2nic.json') )]",
         "gwTemplateUri": "[uri(deployment().properties.templateLink.uri, 'vpnGw.json')]",
         "gwPipUri": "[uri(deployment().properties.templateLink.uri, 'pipDynamic.json')]",
-        "gwPIPName": "[concat(parameters('gwName'),'-pip')]",
-        "asav":"[parameters('config')['NVAs'][0]]",
-        "ftdv": "[parameters('config')['NVAs'][1]]",
-        "csr": "[parameters('config')['NVAs'][2]]"
+        "gwPIPName": "[concat(parameters('gwName'),'-pip')]"
    },
     "resources": [
         {
