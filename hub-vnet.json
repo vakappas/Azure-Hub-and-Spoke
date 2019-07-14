@@ -51,15 +51,20 @@
             "type": "string",
             "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
         },
-        "nvaip0": {
-            "defaultValue": "192.168.100.11",
+        "nvaName": {
+            "defaultValue": "myNVA",
             "type": "string",
-            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
+            "metadata": { "description": "Name for the NVA"}
+        },
+        "nvaip0": {
+            "defaultValue": "10.0.0.41",
+            "type": "string",
+            "metadata": { "description": "NVA's Static IP address on Subnet1" }
         },
         "nvaip1": {
-            "defaultValue": "192.168.100.71",
+            "defaultValue": "10.0.0.71",
             "type": "string",
-            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
+            "metadata": { "description": "NVA's Static IP address on Subnet2" }
         },
         "createGw": {
             "defaultValue": "no",
@@ -208,8 +213,9 @@
             ]
         },
         {
-			"comments": "Create a Cisco ASA NVA with 2nics and connect it to given vnet and subnets",
-			"name": "ASAv",
+        
+			"comments": "Create a Linux VM as an NVA with 2nics and connect it to given vnet and subnets",
+			"name": "[parameters('nvaName')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -221,14 +227,15 @@
 				 "parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vmType": {"value": "[variables('asav').nvaType]"},
+                    "vmType": {"value": "[parameters('nvaType')]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnet0Name": { "value": "[parameters('subnet1Name')]"},
                     "subnet1Name": { "value": "[parameters('subnet2Name')]"},
-                    "ip0": {"value": "[variables('asav').nvaip0]"},
-                    "ip1": {"value": "[variables('asav').nvaip1]"},
-                    "pipName":{"value": "asav-publicIP"},
-                    "vmName": {"value": "[variables('asav').nvaName]"}
+                    "ip0": {"value": "[parameters('nvaip0')]"},
+                    "ip1": {"value": "[parameters('nvaip1')]"},
+                    "createPip": {"value": "yes"},
+                    "pipName":{"value": "[concat(parameters('nvaName'), '-pip')]"},
+                    "vmName": {"value": "[parameters('nvaName')]"}
                 }
             },
             "dependsOn": [
@@ -236,27 +243,24 @@
             ]
         },
         {
-			"comments": "Create a Cisco FTD NVA with 2nics and connect it to given vnet and subnets",
-			"name": "FTDv",
+			"comments": "Create a Linux VM and connect it to a given vnet and subnet",
+			"name": "[parameters('linuxvmName')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
-					"uri": "[variables('nvaTemplateUri')]",
+					"uri": "[variables('linuxvmTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
 				 "parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vmType": {"value": "[variables('ftdv').nvaType]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
-                    "subnet0Name": { "value": "[parameters('subnet1Name')]"},
-                    "subnet1Name": { "value": "[parameters('subnet2Name')]"},
-                    "ip0": {"value": "[variables('ftdv').nvaip0]"},
-                    "ip1": {"value": "[variables('ftdv').nvaip1]"},
-                    "pipName":{"value": "ftdv-publicIP"},
-                    "vmName": {"value": "[variables('ftdv').nvaName]"}
+                    "subnetName": { "value": "[parameters('subnet4Name')]"},
+                    "vmName": {"value": "[parameters('linuxvmName')]"},
+                    "vmSize": {"value": "[parameters('linuxvmSize')]"},
+                    "createPip":{"value": "no"}
                 }
             },
             "dependsOn": [
@@ -264,35 +268,55 @@
             ]
         },
         {
-			"comments": "Create a Cisco CSR Router with 3nics and connect it to given vnet and subnets",
-			"name": "CSR",
+			"comments": "Create a Windows VM and connect it to a given vnet and subnet",
+			"name": "[parameters('windowsvmName')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
-					"uri": "[variables('nva3nicsTemplateUri')]",
+					"uri": "[variables('windowsvmTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
 				 "parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vmType": {"value": "[variables('csr').nvaType]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
-                    "subnet0Name": { "value": "[parameters('subnet2Name')]"},
-                    "subnet1Name": { "value": "[parameters('subnet3Name')]"},
-                    "subnet2Name": { "value": "[parameters('subnet4Name')]"},
-                    "ip0": {"value": "[variables('csr').nvaip0]"},
-                    "ip1": {"value": "[variables('csr').nvaip1]"},
-                    "ip2": {"value": "[variables('csr').nvaip2]"},
-                    "pipName":{"value": "csr-publicIP"},
-                    "vmName": {"value": "[variables('csr').nvaName]"}
+                    "subnetName": { "value": "[parameters('subnet4Name')]"},
+                    "vmName": {"value": "[parameters('windowsvmName')]"},
+                    "vmSize": {"value": "[parameters('windowsvmSize')]"},
+                    "createPip":{"value": "no"}
                 }
             },
             "dependsOn": [
                 "[parameters('vnetName')]"
             ]
-        }        
+        },
+        {
+			"comments": "Create a Domain Controller and connect it to a given vnet and subnet",
+			"name": "ADDS-DC1",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('windowsvmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet3Name')]"},
+                    "vmName": {"value": "DC1"},
+                    "vmSize": {"value": "[parameters('windowsvmSize')]"},
+                    "createPip":{"value": "no"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        }         
      ],
     "outputs": {
         "adminUsername": {
