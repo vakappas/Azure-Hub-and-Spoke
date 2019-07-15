@@ -103,7 +103,7 @@
 					"uri": "[variables('onpremTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": "[variables('on-prem-vnet')]"
+				"parameters": "[parameters('config')['vnets'][0]]"
             },
             "dependsOn": [
               
@@ -120,7 +120,7 @@
 					"uri": "[variables('hubTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": "[variables('hub-vnet')]"
+				"parameters": "[parameters('config')['vnets'][1]]"
             },
             "dependsOn": [
               
@@ -137,7 +137,7 @@
 					"uri": "[variables('spokeTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": "[variables('spoke-vnet')]"
+				"parameters": "[parameters('config')['vnets'][2]]"
             },
             "dependsOn": [
               
