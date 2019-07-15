@@ -151,7 +151,6 @@
                             "ModulesUrl": "[uri(parameters('_artifactsLocation'), concat('DSC/CreateADPDC.zip', parameters('_artifactsLocationSasToken')))]",
                             "ConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
                             "Properties": {
-                                "NodeName": "[parameters('vmName')]",
                                 "DomainName": "[parameters('domainName')]",
                                 "AdminCreds": {
                                     "UserName": "[parameters('adminUsername')]",
