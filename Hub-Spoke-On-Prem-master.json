@@ -94,7 +94,7 @@
     "resources": [
 		{
 			"comments": "Create the On-Prem vnet along with NVA, management VMs & DC",
-			"name": "[variables('on-prem-vnet').vnetName]",
+			"name": "on-prem",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -111,7 +111,7 @@
         },
         {
 			"comments": "Create the hub vnet along with NVA, management VMs & DC",
-			"name": "[variables('hub-vnet').vnetName]",
+			"name": "hub",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -128,7 +128,7 @@
         },
         {
 			"comments": "Create the spoke vnet with a two tier app ",
-			"name": "[variables('spoke-vnet').vnetName]",
+			"name": "spoke",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
