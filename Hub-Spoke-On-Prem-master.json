@@ -103,7 +103,29 @@
 					"uri": "[variables('onpremTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": "[parameters('config')['vnets'][0]]"
+				"parameters": {
+                    "vnetName": "[variables('on-prem-vnet').vnetName]",
+                    "vnetPrefix": "[variables('on-prem-vnet').vnetPrefix]",
+                    "GatewaySubnetPrefix": "[variables('on-prem-vnet').GatewaySubnetPrefix]",
+                    "subnet1Name": "[variables('on-prem-vnet').subnet1Name]",
+                    "subnet1Prefix": "[variables('on-prem-vnet').subnet1Prefix]",
+                    "subnet2Name": "[variables('on-prem-vnet').subnet2Name]",
+                    "subnet2Prefix": "[variables('on-prem-vnet').subnet2Prefix]",
+                    "subnet3Name": "[variables('on-prem-vnet').subnet3Name]",
+                    "subnet3Prefix": "[variables('on-prem-vnet').subnet3Prefix]",
+                    "subnet4Name": "[variables('on-prem-vnet').subnet4Name]",
+                    "subnet4Prefix": "[variables('on-prem-vnet').subnet4Prefix]",
+                    "nvaType": "[variables('on-prem-vnet').nvaType]",
+                    "nvaName": "[variables('on-prem-vnet').nvaName]",
+                    "nvaip0": "[variables('on-prem-vnet').nvaip0]",
+                    "nvaip1": "[variables('on-prem-vnet').nvaip1]",
+                    "createGw": "[variables('on-prem-vnet').createGw]",
+                    "gwName": "[variables('on-prem-vnet').gwName]",
+                    "linuxvmName": "[variables('on-prem-vnet').linuxvmName]",
+                    "windowsvmName": "[variables('on-prem-vnet').windowsvmName]",
+                    "DCvmName": "[variables('on-prem-vnet').DCvmName]",
+                    "domainName": "[variables('on-prem-vnet').domainName]"
+                }
             },
             "dependsOn": [
               
@@ -120,7 +142,28 @@
 					"uri": "[variables('hubTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": "[parameters('config')['vnets'][1]]"
+				"parameters": {
+                    "vnetName": "[variables('hub-vnet').vnetName]",
+                    "vnetPrefix": "[variables('hub-vnet').vnetPrefix]",
+                    "GatewaySubnetPrefix": "[variables('hub-vnet').GatewaySubnetPrefix]",
+                    "subnet1Name": "[variables('hub-vnet').subnet1Name]",
+                    "subnet1Prefix": "[variables('hub-vnet').subnet1Prefix]",
+                    "subnet2Name": "[variables('hub-vnet').subnet2Name]",
+                    "subnet2Prefix": "[variables('hub-vnet').subnet2Prefix]",
+                    "subnet3Name": "[variables('hub-vnet').subnet3Name]",
+                    "subnet3Prefix": "[variables('hub-vnet').subnet3Prefix]",
+                    "subnet4Name": "[variables('hub-vnet').subnet4Name]",
+                    "subnet4Prefix": "[variables('hub-vnet').subnet4Prefix]",
+                    "nvaType": "[variables('hub-vnet').nvaType]",
+                    "nvaName": "[variables('hub-vnet').nvaName]",
+                    "nvaip0": "[variables('hub-vnet').nvaip0]",
+                    "nvaip1": "[variables('hub-vnet').nvaip1]",
+                    "createGw": "[variables('hub-vnet').createGw]",
+                    "gwName": "[variables('hub-vnet').gwName]",
+                    "linuxvmName": "[variables('hub-vnet').linuxvmName]",
+                    "windowsvmName": "[variables('hub-vnet').windowsvmName]",
+                    "DCvmName": "[variables('hub-vnet').DCvmName]"
+                }
             },
             "dependsOn": [
               
@@ -137,7 +180,18 @@
 					"uri": "[variables('spokeTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": "[parameters('config')['vnets'][2]]"
+				"parameters": {
+                    "vnetName": "[variables('hub-vnet').vnetName]",
+                    "vnetPrefix": "[variables('spoke-vnet').vnetPrefix]",
+                    "subnet1Name": "[variables('spoke-vnet').subnet1Name]",
+                    "subnet1Prefix": "[variables('spoke-vnet').subnet1Prefix]",
+                    "subnet2Name": "[variables('spoke-vnet').subnet2Name]",
+                    "subnet2Prefix": "[variables('spoke-vnet').subnet2Prefix]",
+                    "WebvmName": "[variables('spoke-vnet').WebvmName]",
+                    "WebvmSize": "[variables('spoke-vnet').WebvmSize]",
+                    "SQLvmName": "[variables('spoke-vnet').SQLvmName]",
+                    "SQLvmSize": "[variables('spoke-vnet').SQLvmSize]"           
+                }
             },
             "dependsOn": [
               

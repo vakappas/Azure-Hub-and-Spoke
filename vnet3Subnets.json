@@ -163,8 +163,7 @@
             ]
         },
 		{
-            "comments": "Optionally create VPN gateway, if createGw equals 'yes'",
-            "condition": "[equals(parameters('createGw'), 'yes')]",
+            
 			"name": "[concat(parameters('vnetName'), 'VpnGw')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
