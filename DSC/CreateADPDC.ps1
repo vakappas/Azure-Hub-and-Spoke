@@ -3,6 +3,9 @@ configuration CreateADPDC
    param 
    ( 
         [Parameter(Mandatory)]
+        [string] $NodeName,
+
+        [Parameter(Mandatory)]
         [String]$DomainName,
 
         [Parameter(Mandatory)]
@@ -17,7 +20,7 @@ configuration CreateADPDC
     $Interface=Get-NetAdapter|Where Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
-    Node localhost
+    Node $NodeName
     {
         LocalConfigurationManager 
         {
