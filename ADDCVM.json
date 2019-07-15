@@ -68,7 +68,7 @@
         "nicName": "[concat(parameters('vmName'),'-nic')]",
         "pipName": "[concat(parameters('vmName'),'-pip')]",
 		"diskName": "[concat(parameters('vmName'),'-disk')]",
-		"apiVersion": "2017-03-30",
+		"apiVersion": "2018-04-01",
         "nicTemplateUriHash": {
             "yes": "[uri(deployment().properties.templateLink.uri, 'nic_NSG_noSLB_PIP_dynamic.json')]",
             "no": "[uri(deployment().properties.templateLink.uri, 'nic_noNSG_noSLB_noPIP_dynamic.json')]"
