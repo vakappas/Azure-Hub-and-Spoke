@@ -22,6 +22,7 @@ $templateParameters = @{
     adminPassword = $cred.Password
     nvaType = "ubuntu"
     domainName = "vklab.local"
+    DCvmSize = "Standard_D2s_v3"
 
 }
 

@@ -104,7 +104,7 @@
         },
         "DCvmSize": {
             "type": "string",
-            "defaultValue": "Standard_B1s"
+            "defaultValue": "Standard_D2s_v3"
         },
         "domainName": {
             "type": "string",

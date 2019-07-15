@@ -21,36 +21,61 @@
             "defaultValue": {
                 "vnets": [
                     {
-                        "vnetName": "hub-vnet",
-                        "vnetPrefix": "10.0.0.0/16",
-                        "Outside": "10.0.1.0/24",
-                        "Inside": "10.0.2.0/24",
-                        "ServersNet01": "10.0.3.0/24",
-                        "ServersNet02": "10.0.4.0/24",
-                        "vmName": "hub-srv01",
-                        "nvaName": "asafw",
-                        "nvaip0": "10.0.1.10",
-                        "nvaip1": "10.0.2.10"
+                        "vnetName": "on-prem-vnet",
+                        "vnetPrefix": "10.0.0.0/24",
+                        "GatewaySubnetPrefix": "10.0.0.0/27",
+                        "subnet1Name": "MGMT",
+                        "subnet1Prefix": "10.0.0.32/27",
+                        "subnet2Name": "Clients",
+                        "subnet2Prefix": "10.0.0.64/27",
+                        "subnet3Name": "ADDS",
+                        "subnet3Prefix": "10.0.0.96/27",
+                        "subnet4Name": "Servers",
+                        "subnet4Prefix": "10.0.0.128/27",
+                        "nvaType": "ubuntu",
+                        "nvaName": "OnPremFW",
+                        "nvaip0": "10.0.0.41",
+                        "nvaip1": "10.0.0.71",
+                        "createGw": "no",
+                        "gwName": "OnPremGW",
+                        "linuxvmName": "LMGMT01",
+                        "windowsvmName": "WMGMT01",
+                        "DCvmName": "OnPremDC01",
+                        "domainName": "vklab.local"                        
                     },
                     {
                         "vnetName": "hub-vnet",
-                        "vnetPrefix": "10.0.0.0/16",
-                        "Outside": "10.0.1.0/24",
-                        "Inside": "10.0.2.0/24",
-                        "ServersNet01": "10.0.3.0/24",
-                        "ServersNet02": "10.0.4.0/24",
-                        "vmName": "hub-srv01",
-                        "nvaName": "asafw",
-                        "nvaip0": "10.0.1.10",
-                        "nvaip1": "10.0.2.10"
+                        "vnetPrefix": "10.1.0.0/24",
+                        "GatewaySubnetPrefix": "10.1.0.0/27",
+                        "subnet1Name": "DMZ-Out",
+                        "subnet1Prefix": "10.1.0.32/27",
+                        "subnet2Name": "DMZ-In",
+                        "subnet2Prefix": "10.1.0.64/27",
+                        "subnet3Name": "ADDS",
+                        "subnet3Prefix": "10.1.0.96/27",
+                        "subnet4Name": "MGMT",
+                        "subnet4Prefix": "10.1.0.128/27",
+                        "nvaType": "ubuntu",
+                        "nvaName": "OnPremFW",
+                        "nvaip0": "10.1.0.41",
+                        "nvaip1": "10.1.0.71",
+                        "createGw": "no",
+                        "gwName": "hubGW",
+                        "linuxvmName": "LMGMT01",
+                        "windowsvmName": "WMGMT01",
+                        "DCvmName": "OnPremDC01"                       
                     },
                     {
                         "vnetName": "spoke-vnet",
-                        "vnetPrefix": "10.1.0.0/24",
-                        "FrontNet": "10.1.0.0/26",
-                        "AppNet": "10.1.0.64/26",
-                        "DBNet": "10.1.0.128/26",
-                        "vmName": "sp-srv01"
+                        "vnetPrefix": "10.1.1.0/24",
+                        "subnet1Name": "Web",
+                        "subnet1Prefix": "10.1.1.32/27",
+                        "subnet2Name": "SQL",
+                        "subnet2Prefix": "10.1.1.64/27",
+                        "WebvmName": "Web01",
+                        "WebvmSize": "Standard_D2s_v3",
+                        "SQLvmName": "SQL01",
+                        "SQLvmSize": "Standard_D4s_v3"                     
                     }
                 ]
             }
@@ -59,15 +84,34 @@
     "variables": {
         "networkApiVersion": "2018-08-01",
         "deploymentApiVersion": "2017-05-10",
+        "onpremTemplateUri": "[uri(deployment().properties.templateLink.uri, 'on-prem-vnet.json')]",
         "hubTemplateUri": "[uri(deployment().properties.templateLink.uri, 'hub-vnet.json')]",
         "spokeTemplateUri": "[uri(deployment().properties.templateLink.uri, 'spoke-vnet.json')]",
-        "hub-vnet":"[parameters('config')['vnets'][0]]",
-        "spoke-vnet": "[parameters('config')['vnets'][1]]"
+        "on-prem-vnet":"[parameters('config')['vnets'][0]]",
+        "hub-vnet":"[parameters('config')['vnets'][1]]",
+        "spoke-vnet": "[parameters('config')['vnets'][2]]"
     },
     "resources": [
 		{
-			"comments": "Create Hub and Spoke vnets along with NVAs and VMs",
-			"name": "hub-vnet",
+			"comments": "Create the On-Prem vnet along with NVA, management VMs & DC",
+			"name": "[variables('on-prem-vnet').vnetName]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('onpremTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": "[variables('on-prem-vnet')]"
+            },
+            "dependsOn": [
+              
+            ]
+        },
+        {
+			"comments": "Create the hub vnet along with NVA, management VMs & DC",
+			"name": "[variables('hub-vnet').vnetName]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -76,34 +120,15 @@
 					"uri": "[variables('hubTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": {
-                    "adminUsername": {"value": "[parameters('adminUsername')]"},
-                    "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vnetPrefix": {"value": "[variables('hub-vnet').vnetPrefix]"},
-                    "vnetName": {"value": "[variables('hub-vnet').vnetName]"},
-                    "subnet1Name": {"value": "Outside"},
-                    "subnet1Prefix": {"value": "[variables('hub-vnet').Outside]"},
-                    "subnet2Name": {"value": "Inside"},
-                    "subnet2Prefix": {"value": "[variables('hub-vnet').Inside]"},
-                    "subnet3Name": {"value": "ServersNet01"},
-                    "subnet3Prefix": {"value": "[variables('hub-vnet').ServersNet01]"},
-                    "subnet4Name": {"value": "ServersNet02"},
-                    "subnet4Prefix": {"value": "[variables('hub-vnet').ServersNet02]"},
-                    "nvaName": {"value": "[variables('hub-vnet').nvaName]"},
-                    "nvaSize": {"value": "Standard_D3_v2"},
-                    "nvaip0": {"value": "[variables('hub-vnet').nvaip0]"},
-                    "nvaip1": {"value": "[variables('hub-vnet').nvaip1]"},                               
-					"vmName": {"value": "[variables('hub-vnet').vmName]"},
-                    "vmSize": {"value": "Standard_B1s"}
-                }
+				"parameters": "[variables('hub-vnet')]"
             },
             "dependsOn": [
               
             ]
         },
-{
-			"comments": "Simulate a number of vnets, each including two subnets, an Ubuntu VM and a CSR 1Kv NVA",
-			"name": "spoke-vnet",
+        {
+			"comments": "Create the spoke vnet with a two tier app ",
+			"name": "[variables('spoke-vnet').vnetName]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -112,24 +137,11 @@
 					"uri": "[variables('spokeTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
-				"parameters": {
-                    "adminUsername": {"value": "[parameters('adminUsername')]"},
-                    "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vnetPrefix": {"value": "[variables('spoke-vnet').vnetPrefix]"},
-                    "vnetName": {"value": "[variables('spoke-vnet').vnetName]"},
-                    "subnet1Name": {"value": "FrontNet"},
-                    "subnet1Prefix": {"value": "[variables('spoke-vnet').FrontNet]"},
-                    "subnet2Name": {"value": "AppNet"},
-                    "subnet2Prefix": {"value": "[variables('spoke-vnet').AppNet]"},
-                    "subnet3Name": {"value": "DBNet"},
-                    "subnet3Prefix": {"value": "[variables('spoke-vnet').DBNet]"},    
-					"vmName": {"value": "[variables('spoke-vnet').vmName]"},
-                    "vmSize": {"value": "Standard_B1s"} 
-                }
+				"parameters": "[variables('spoke-vnet')]"
             },
             "dependsOn": [
-                "[variables('hub-vnet').vnetName]"
-            ]   			
+              
+            ]
         }
     ]
 }
