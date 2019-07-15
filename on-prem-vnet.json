@@ -1,0 +1,343 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "defaultValue": "on-prem-vnet",
+            "type": "string"
+        },
+        "vnetPrefix": {
+            "defaultValue": "10.1.0.0/24",
+            "type": "string"
+        },
+        "GatewaySubnetPrefix": {
+            "defaultValue": "10.1.0.0/27",
+            "type": "string"
+        },
+        "subnet1Name": {
+            "defaultValue": "MGMT",
+            "type": "string"
+        },
+        "subnet1Prefix": {
+            "defaultValue": "10.1.0.32/27",
+            "type": "string"
+        },
+        "subnet2Name": {
+            "defaultValue": "Clients",
+            "type": "string"
+        },
+        "subnet2Prefix": {
+            "defaultValue": "10.1.0.64/27",
+            "type": "string"
+        },
+        "subnet3Name": {
+            "defaultValue": "ADDS",
+            "type": "string"
+        },
+        "subnet3Prefix": {
+            "defaultValue": "10.1.0.96/27",
+            "type": "string"
+        },
+        "subnet4Name": {
+            "defaultValue": "Servers",
+            "type": "string"
+        },
+        "subnet4Prefix": {
+            "defaultValue": "10.1.0.128/27",
+            "type": "string"
+        },
+        "nvaType": {
+            "defaultValue": "csr",
+            "type": "string",
+            "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
+        },
+        "nvaName": {
+            "defaultValue": "myNVA",
+            "type": "string",
+            "metadata": { "description": "Name for the NVA"}
+        },
+        "nvaip0": {
+            "defaultValue": "10.1.0.41",
+            "type": "string",
+            "metadata": { "description": "NVA's Static IP address on Subnet1" }
+        },
+        "nvaip1": {
+            "defaultValue": "10.1.0.71",
+            "type": "string",
+            "metadata": { "description": "NVA's Static IP address on Subnet2" }
+        },
+        "createGw": {
+            "defaultValue": "no",
+            "type": "string",
+            "allowedValues": ["yes", "no"]
+        },
+        "gwName": {
+            "defaultValue": "myGw",
+            "type": "string",
+            "metadata": { "description": "Name for the VPN gateway"}
+        },
+        "enableBgp": {
+            "type": "string",
+            "metadata": { "description": "Enable or disable BGP" },
+            "defaultValue": "false",
+            "allowedValues": ["true", "false"]    
+        },
+        "linuxvmName": {
+            "type": "string",
+            "defaultValue": "mylinuxVm"
+        },
+        "linuxvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "windowsvmName": {
+            "type": "string",
+            "defaultValue": "mywindowsVm"
+        },
+        "windowsvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "DCvmName": {
+            "type": "string",
+            "defaultValue": "DC1"
+        },
+        "DCvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "domainName": {
+            "type": "string",
+            "metadata": {
+                "description": "The FQDN of the Active Directory Domain to be created"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "lab-user"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        }
+    },
+    "variables": {
+        "networkApiVersion": "2018-04-01",
+        "computeApiVersion": "2018-06-01",
+        "storageApiVersion": "2018-07-01",
+        "deploymentApiVersion": "2017-05-10",
+        "linuxvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
+        "windowsvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'windowsVM.json')]",
+        "addcvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'ADDCVM.json')]",
+        "nvaTemplateUri": "[if(equals(parameters('nvaType'), 'ubuntu'),uri(deployment().properties.templateLink.uri,'nvaLinux_2nic_noVnet.json'),uri(deployment().properties.templateLink.uri,'nva_2nic.json') )]",
+        "gwTemplateUri": "[uri(deployment().properties.templateLink.uri, 'vpnGw.json')]",
+        "gwPipUri": "[uri(deployment().properties.templateLink.uri, 'pipDynamic.json')]",
+        "gwPIPName": "[concat(parameters('gwName'),'-pip')]"
+   },
+    "resources": [
+        {
+            "comments": "Create Vnet with four subnets and a Gateway Subnet",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('vnetName')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "GatewaySubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1Prefix')]"                            
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet3Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet3Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet4Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet4Prefix')]"
+                        }
+                    }
+				]
+            },
+            "resources": [],
+            "dependsOn": [
+            ]
+        },
+        {
+			"comments": "Optionally create a public IP address, if createGw equals 'yes'",
+            "condition": "[equals(parameters('createGw'), 'yes')]",
+			"name": "[variables('gwPIPName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('gwPipUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "pipName": { "value": "[variables('gwPIPName')]" }
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        },
+        {
+            "comments": "Optionally create VPN gateway, if createGw equals 'yes'",
+            "condition": "[equals(parameters('createGw'), 'yes')]",
+			"name": "[concat(parameters('vnetName'), 'VpnGw')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('gwTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "vnetName": { "value": "[parameters('vnetName')]" },
+                    "gwName": {"value": "[concat(parameters('vnetName'), parameters('gwName'))]"},
+                    "PIPName": { "value": "[variables('gwPIPName')]" },
+                    "enableBgp": { "value": "[parameters('enableBgp')]" }   
+                }
+            },
+            "dependsOn": [
+                "[variables('gwPIPName')]",
+                "[parameters('vnetName')]"                
+            ]
+        },
+        {
+        
+			"comments": "Create a Linux VM as an NVA with 2nics and connect it to given vnet and subnets",
+			"name": "[parameters('nvaName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('nvaTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vmType": {"value": "[parameters('nvaType')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnet0Name": { "value": "[parameters('subnet1Name')]"},
+                    "subnet1Name": { "value": "[parameters('subnet2Name')]"},
+                    "ip0": {"value": "[parameters('nvaip0')]"},
+                    "ip1": {"value": "[parameters('nvaip1')]"},
+                    "createPip": {"value": "yes"},
+                    "pipName":{"value": "[concat(parameters('nvaName'), '-pip')]"},
+                    "vmName": {"value": "[parameters('nvaName')]"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        },
+        {
+			"comments": "Create a Linux VM and connect it to a given vnet and subnet",
+			"name": "[parameters('linuxvmName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('linuxvmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet4Name')]"},
+                    "vmName": {"value": "[parameters('linuxvmName')]"},
+                    "vmSize": {"value": "[parameters('linuxvmSize')]"},
+                    "createPip":{"value": "no"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        },
+        {
+			"comments": "Create a Windows VM and connect it to a given vnet and subnet",
+			"name": "[parameters('windowsvmName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('windowsvmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet4Name')]"},
+                    "vmName": {"value": "[parameters('windowsvmName')]"},
+                    "vmSize": {"value": "[parameters('windowsvmSize')]"},
+                    "createPip":{"value": "no"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        },
+        {
+			"comments": "Create a Domain Controller and connect it to a given vnet and subnet",
+			"name": "[parameters('DCvmName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('addcvmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet3Name')]"},
+                    "domainName": {"value": "[parameters('domainName')]"},
+                    "vmName": {"value": "[parameters('DCvmName')]"},
+                    "vmSize": {"value": "[parameters('DCvmSize')]"},
+                    "createPip":{"value": "no"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        }         
+     ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}
