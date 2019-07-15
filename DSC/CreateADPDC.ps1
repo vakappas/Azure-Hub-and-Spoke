@@ -16,47 +16,70 @@ configuration CreateADPDC
     ) 
     
     Import-DscResource -ModuleName xActiveDirectory, xStorage, xNetworking, PSDesiredStateConfiguration, xPendingReboot
-    [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
-    $Interface=Get-NetAdapter|Where Name -Like "Ethernet*"|Select-Object -First 1
-    $InterfaceAlias=$($Interface.Name)
 
     Node $NodeName
     {
-        LocalConfigurationManager 
+        LocalConfigurationManager
         {
+            ConfigurationMode = 'ApplyAndAutoCorrect'
             RebootNodeIfNeeded = $true
+            ActionAfterReboot = 'ContinueConfiguration'
+            AllowModuleOverwrite = $true
         }
-
-	    WindowsFeature DNS 
+ 
+        WindowsFeature DNS_RSAT
         { 
-            Ensure = "Present" 
-            Name = "DNS"		
-        }
-
-        Script EnableDNSDiags
-	    {
-      	    SetScript = { 
-		        Set-DnsServerDiagnostics -All $true
-                Write-Verbose -Verbose "Enabling DNS client diagnostics" 
-            }
-            GetScript =  { @{} }
-            TestScript = { $false }
-	        DependsOn = "[WindowsFeature]DNS"
-        }
-
-	    WindowsFeature DnsTools
-	    {
-	        Ensure = "Present"
+            Ensure = "Present"
             Name = "RSAT-DNS-Server"
-            DependsOn = "[WindowsFeature]DNS"
-	    }
-
-        xDnsServerAddress DnsServerAddress 
+        }
+ 
+        WindowsFeature ADDS_Install 
         { 
-            Address        = '127.0.0.1' 
-            InterfaceAlias = $InterfaceAlias
-            AddressFamily  = 'IPv4'
-	        DependsOn = "[WindowsFeature]DNS"
+            Ensure = 'Present'
+            Name = 'AD-Domain-Services'
+        } 
+ 
+        WindowsFeature RSAT_AD_AdminCenter 
+        {
+            Ensure = 'Present'
+            Name   = 'RSAT-AD-AdminCenter'
+        }
+ 
+        WindowsFeature RSAT_ADDS 
+        {
+            Ensure = 'Present'
+            Name   = 'RSAT-ADDS'
+        }
+ 
+        WindowsFeature RSAT_AD_PowerShell 
+        {
+            Ensure = 'Present'
+            Name   = 'RSAT-AD-PowerShell'
+        }
+ 
+        WindowsFeature RSAT_AD_Tools 
+        {
+            Ensure = 'Present'
+            Name   = 'RSAT-AD-Tools'
+        }
+ 
+        WindowsFeature RSAT_Role_Tools 
+        {
+            Ensure = 'Present'
+            Name   = 'RSAT-Role-Tools'
+        }      
+ 
+        WindowsFeature RSAT_GPMC 
+        {
+            Ensure = 'Present'
+            Name   = 'GPMC'
+        }
+
+        WindowsFeature ADDSTools
+        {
+            Ensure = "Present"
+            Name = "RSAT-ADDS-Tools"
+            DependsOn = "[WindowsFeature]ADDS_Install"
         }
 
         xWaitforDisk Disk2
@@ -70,38 +93,17 @@ configuration CreateADPDC
             DiskNumber = 2
             DriveLetter = "F"
             DependsOn = "[xWaitForDisk]Disk2"
-        }
-
-        WindowsFeature ADDSInstall 
-        { 
-            Ensure = "Present" 
-            Name = "AD-Domain-Services"
-	        DependsOn="[WindowsFeature]DNS" 
-        } 
-
-        WindowsFeature ADDSTools
-        {
-            Ensure = "Present"
-            Name = "RSAT-ADDS-Tools"
-            DependsOn = "[WindowsFeature]ADDSInstall"
-        }
-
-        WindowsFeature ADAdminCenter
-        {
-            Ensure = "Present"
-            Name = "RSAT-AD-AdminCenter"
-            DependsOn = "[WindowsFeature]ADDSInstall"
-        }
+        }       
          
         xADDomain FirstDS 
         {
             DomainName = $DomainName
-            DomainAdministratorCredential = $DomainCreds
-            SafemodeAdministratorPassword = $DomainCreds
+            DomainAdministratorCredential = $Admincreds
+            SafemodeAdministratorPassword = $Admincreds
             DatabasePath = "F:\NTDS"
             LogPath = "F:\NTDS"
             SysvolPath = "F:\SYSVOL"
-	        DependsOn = @("[xDisk]ADDataDisk", "[WindowsFeature]ADDSInstall")
+	        DependsOn = @("[xDisk]ADDataDisk", "[WindowsFeature]ADDS_Install")
         } 
 
    }

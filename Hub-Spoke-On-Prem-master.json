@@ -33,6 +33,18 @@
                         "nvaip1": "10.0.2.10"
                     },
                     {
+                        "vnetName": "hub-vnet",
+                        "vnetPrefix": "10.0.0.0/16",
+                        "Outside": "10.0.1.0/24",
+                        "Inside": "10.0.2.0/24",
+                        "ServersNet01": "10.0.3.0/24",
+                        "ServersNet02": "10.0.4.0/24",
+                        "vmName": "hub-srv01",
+                        "nvaName": "asafw",
+                        "nvaip0": "10.0.1.10",
+                        "nvaip1": "10.0.2.10"
+                    },
+                    {
                         "vnetName": "spoke-vnet",
                         "vnetPrefix": "10.1.0.0/24",
                         "FrontNet": "10.1.0.0/26",

@@ -7,38 +7,54 @@
             "type": "string"
         },
         "vnetPrefix": {
-            "defaultValue": "192.168.100.0/24",
+            "defaultValue": "10.0.1.0/24",
             "type": "string"
-        },
+        },        
         "subnet1Name": {
-            "defaultValue": "subnet1",
+            "defaultValue": "Front",
             "type": "string"
         },
         "subnet1Prefix": {
-            "defaultValue": "192.168.100.0/26",
+            "defaultValue": "10.0.1.0/27",
             "type": "string"
         },
         "subnet2Name": {
-            "defaultValue": "subnet2",
+            "defaultValue": "Back",
             "type": "string"
         },
         "subnet2Prefix": {
-            "defaultValue": "192.168.100.64/26",
+            "defaultValue": "10.0.1.32/27",
             "type": "string"
         },
-        "subnet3Name": {
-            "defaultValue": "subnet3",
-            "type": "string"
-        },
-        "subnet3Prefix": {
-            "defaultValue": "192.168.100.128/26",
-            "type": "string"
-        },
-        "vmName": {
+        "linuxvmName": {
             "type": "string",
-            "defaultValue": "myVm"
+            "defaultValue": "mylinuxVm"
         },
-        "vmSize": {
+        "linuxvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "windowsvmName": {
+            "type": "string",
+            "defaultValue": "mywindowsVm"
+        },
+        "windowsvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "WebvmName": {
+            "type": "string",
+            "defaultValue": "DC1"
+        },
+        "WebvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "SQLvmName": {
+            "type": "string",
+            "defaultValue": "DC1"
+        },
+        "SQLvmSize": {
             "type": "string",
             "defaultValue": "Standard_B1s"
         },
@@ -55,11 +71,12 @@
         "computeApiVersion": "2018-06-01",
         "storageApiVersion": "2018-07-01",
         "deploymentApiVersion": "2017-05-10",
-        "vmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]"
+        "linuxvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
+        "windowsvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'windowsVM.json')]"
    },
     "resources": [
         {
-            "comments": "Create Vnet with three subnets",
+            "comments": "Create a Vnet with two subnets",
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('vnetName')]",
             "apiVersion": "[variables('networkApiVersion')]",
@@ -82,28 +99,22 @@
                         "properties": {
                             "addressPrefix": "[parameters('subnet2Prefix')]"
                         }
-                    },
-                    {
-                        "name": "[parameters('subnet3Name')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('subnet3Prefix')]"
-                        }
                     }
 				]
             },
             "resources": [],
             "dependsOn": [
             ]
-        },
+        },        
         {
-			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
-			"name": "UbuntuVM",
+			"comments": "Create a Windows VM as a Web Server and connect it to a given vnet and subnet",
+			"name": "[parameters('WebvmName')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
-					"uri": "[variables('vmTemplateUri')]",
+					"uri": "[variables('windowsvmTemplateUri')]",
 					"contentVersion": "1.0.0.0"
 				},
 				 "parameters": {
@@ -111,15 +122,40 @@
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnetName": { "value": "[parameters('subnet1Name')]"},
-                    "vmName": {"value": "[parameters('vmName')]"},
-                    "vmSize": {"value": "[parameters('vmSize')]"},
+                    "vmName": {"value": "[parameters('WebvmName')]"},
+                    "vmSize": {"value": "[parameters('WebvmSize')]"},
                     "createPip":{"value": "yes"}
                 }
             },
             "dependsOn": [
                 "[parameters('vnetName')]"
             ]
-        }
+        },
+        {
+			"comments": "Create a Windows VM as a SQL Server and connect it to a given vnet and subnet",
+			"name": "[parameters('WebvmName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('windowsvmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet2Name')]"},
+                    "vmName": {"value": "[parameters('SQLvmName')]"},
+                    "vmSize": {"value": "[parameters('SQLvmSize')]"},
+                    "createPip":{"value": "yes"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        }        
      ],
     "outputs": {
         "adminUsername": {
