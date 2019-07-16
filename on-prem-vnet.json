@@ -47,7 +47,7 @@
             "type": "string"
         },
         "nvaType": {
-            "defaultValue": "csr",
+            "defaultValue": "ubuntu",
             "type": "string",
             "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
         },
