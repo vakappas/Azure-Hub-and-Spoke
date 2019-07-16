@@ -133,7 +133,7 @@
         },
         {
 			"comments": "Create a Windows VM as a SQL Server and connect it to a given vnet and subnet",
-			"name": "[parameters('WebvmName')]",
+			"name": "[parameters('SQLvmName')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
