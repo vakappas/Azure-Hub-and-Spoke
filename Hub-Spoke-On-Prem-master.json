@@ -62,8 +62,7 @@
                         "createGw": "no",
                         "gwName": "hubGW",
                         "linuxvmName": "LMGMT01",
-                        "windowsvmName": "WMGMT01",
-                        "DCvmName": "OnPremDC01"                       
+                        "windowsvmName": "WMGMT01"                   
                     },
                     {
                         "vnetName": "spoke-vnet",
