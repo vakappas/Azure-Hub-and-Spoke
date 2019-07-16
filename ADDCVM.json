@@ -189,7 +189,8 @@
                     "pipName": { "value": "[variables('pipName')]" },
                     "nicName": { "value": "[variables('nicName')]" },
                     "vnetName": { "value": "[parameters('vnetName')]" },
-                    "subnetName": { "value": "[parameters('subnetName')]"}
+                    "subnetName": { "value": "[parameters('subnetName')]"},
+                    "ipAddress": {"value": "[parameters('ipAddress')]"}
                 }
 			},
             "dependsOn": []
