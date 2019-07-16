@@ -164,7 +164,7 @@
                     "createGw":  {"value": "[variables('hub-vnet').createGw]"},
                     "gwName":  {"value": "[variables('hub-vnet').gwName]"},
                     "linuxvmName":  {"value": "[variables('hub-vnet').linuxvmName]"},
-                    "windowsvmName":  {"value": "[variables('hub-vnet').windowsvmName]"},
+                    "windowsvmName":  {"value": "[variables('hub-vnet').windowsvmName]"}
                 }
             },
             "dependsOn": [
