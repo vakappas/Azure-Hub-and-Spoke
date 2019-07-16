@@ -106,6 +106,10 @@
             "type": "string",
             "defaultValue": "Standard_D2s_v3"
         },
+        "DCipAddress": {
+            "defaultValue": "10.0.0.1",
+            "type": "string"
+        },
         "domainName": {
             "type": "string",
             "metadata": {
@@ -326,6 +330,7 @@
                     "domainName": {"value": "[parameters('domainName')]"},
                     "vmName": {"value": "[parameters('DCvmName')]"},
                     "vmSize": {"value": "[parameters('DCvmSize')]"},
+                    "ipAddress": {"value": "[parameters('DCipAddress')]"},
                     "createPip":{"value": "no"}
                 }
             },

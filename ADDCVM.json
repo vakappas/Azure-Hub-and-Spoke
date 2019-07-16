@@ -57,6 +57,10 @@
             "defaultValue": "Standard_D2s_v3",
             "type": "string"
         },
+        "ipAddress": {
+            "defaultValue": "10.0.0.1",
+            "type": "string"
+        },
         "createPip": {
             "defaultValue": "yes",
             "type": "string",
