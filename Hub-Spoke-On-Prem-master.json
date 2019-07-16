@@ -104,6 +104,8 @@
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetName": {"value": "[variables('on-prem-vnet').vnetName]"},
                     "vnetPrefix":  {"value": "[variables('on-prem-vnet').vnetPrefix]"},
                     "GatewaySubnetPrefix":  {"value": "[variables('on-prem-vnet').GatewaySubnetPrefix]"},
@@ -143,6 +145,8 @@
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetName":  {"value": "[variables('hub-vnet').vnetName]"},
                     "vnetPrefix":  {"value": "[variables('hub-vnet').vnetPrefix]"},
                     "GatewaySubnetPrefix":  {"value": "[variables('hub-vnet').GatewaySubnetPrefix]"},
@@ -162,7 +166,6 @@
                     "gwName":  {"value": "[variables('hub-vnet').gwName]"},
                     "linuxvmName":  {"value": "[variables('hub-vnet').linuxvmName]"},
                     "windowsvmName":  {"value": "[variables('hub-vnet').windowsvmName]"},
-                    "DCvmName":  {"value": "[variables('hub-vnet').DCvmName]"}
                 }
             },
             "dependsOn": [
@@ -181,6 +184,8 @@
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetName":  {"value":"[variables('hub-vnet').vnetName]"},
                     "vnetPrefix":  {"value":"[variables('spoke-vnet').vnetPrefix]"},
                     "subnet1Name":  {"value":"[variables('spoke-vnet').subnet1Name]"},
