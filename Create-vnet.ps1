@@ -11,7 +11,7 @@ $Location = "West Europe"
 ## $url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Hub-net-2-firewalls-1-router/hub-vnet.json"
 
 ## url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/spoke-vnet.json
-$url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Hub-Spoke-On-Prem/spoke-vnet.json"
+$url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Hub-Spoke-On-Prem/Hub-Spoke-On-Prem-master.json"
 
 New-AzResourceGroup -Name $RG -Location $Location
 
@@ -20,8 +20,6 @@ $templateParameters = @{
 
     adminUsername = $cred.UserName
     adminPassword = $cred.Password
-    WebvmName = "Web"
-    SQLvmName = "SQL"
 
 }
 
