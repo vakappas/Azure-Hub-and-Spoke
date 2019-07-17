@@ -94,7 +94,7 @@
     "resources": [
 		{
 			"comments": "Create the On-Prem vnet along with NVA, management VMs & DC",
-			"name": "on-prem",
+			"name": "[variables('on-prem-vnet').vnetName]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -136,7 +136,7 @@
         },
         {
 			"comments": "Create the hub vnet along with NVA, management VMs & DC",
-			"name": "hub",
+			"name": "[variables('hub-vnet').vnetName]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -175,7 +175,7 @@
         },
         {
 			"comments": "Create the spoke vnet with a two tier app ",
-			"name": "spoke",
+			"name": "[variables('spoke-vnet').vnetName]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -187,7 +187,7 @@
 				"parameters": {
                     "adminUsername": {"value": "[parameters('adminUsername')]"},
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
-                    "vnetName":  {"value":"[variables('hub-vnet').vnetName]"},
+                    "vnetName":  {"value":"[variables('spoke-vnet').vnetName]"},
                     "vnetPrefix":  {"value":"[variables('spoke-vnet').vnetPrefix]"},
                     "subnet1Name":  {"value":"[variables('spoke-vnet').subnet1Name]"},
                     "subnet1Prefix":  {"value":"[variables('spoke-vnet').subnet1Prefix]"},

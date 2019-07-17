@@ -24,7 +24,7 @@ $templateParameters = @{
 }
 
 
-New-AzResourceGroupDeployment -Name hub -ResourceGroupName $RG -TemplateUri $url -TemplateParameterObject $templateParameters
+New-AzResourceGroupDeployment -Name OnPremHubSpoke -ResourceGroupName $RG -TemplateUri $url -TemplateParameterObject $templateParameters
 #connect to VM using RDP
     mstsc /v:((Get-AzPublicIpAddress -ResourceGroupName $rg).IpAddress)
 
