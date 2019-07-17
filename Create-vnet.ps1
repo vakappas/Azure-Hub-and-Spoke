@@ -20,6 +20,8 @@ $templateParameters = @{
 
     adminUsername = $cred.UserName
     adminPassword = $cred.Password
+    WebvmName = "Web"
+    SQLvmName = "SQL"
 
 }
 

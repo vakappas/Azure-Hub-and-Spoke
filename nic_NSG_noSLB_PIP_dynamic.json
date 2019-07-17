@@ -44,7 +44,7 @@
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[parameters('pipName')]",
             "apiVersion": "[variables('apiVersion')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "idleTimeoutInMinutes": 4
