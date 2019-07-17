@@ -221,7 +221,7 @@
 				},
 				"parameters": {
                     "vnetName": { "value": "[parameters('vnetName')]" },
-                    "gwName": {"value": "[concat(parameters('vnetName'), parameters('gwName'))]"},
+                    "gwName": {"value": "[parameters('gwName')]"},
                     "PIPName": { "value": "[variables('gwPIPName')]" },
                     "enableBgp": { "value": "[parameters('enableBgp')]" }   
                 }
