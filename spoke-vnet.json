@@ -44,7 +44,7 @@
         },
         "WebvmName": {
             "type": "string",
-            "defaultValue": "DC1"
+            "defaultValue": "Web"
         },
         "WebvmSize": {
             "type": "string",
@@ -52,7 +52,7 @@
         },
         "SQLvmName": {
             "type": "string",
-            "defaultValue": "DC1"
+            "defaultValue": "SQL"
         },
         "SQLvmSize": {
             "type": "string",

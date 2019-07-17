@@ -41,6 +41,7 @@
                         "linuxvmName": "LMGMT01",
                         "windowsvmName": "WMGMT01",
                         "DCvmName": "OnPremDC01",
+                        "DCipAddress": "10.0.0.101",
                         "domainName": "vklab.local"                        
                     },
                     {
@@ -125,6 +126,7 @@
                     "linuxvmName":  {"value": "[variables('on-prem-vnet').linuxvmName]"},
                     "windowsvmName":  {"value": "[variables('on-prem-vnet').windowsvmName]"},
                     "DCvmName":  {"value": "[variables('on-prem-vnet').DCvmName]"},
+                    "DCipAddress": {"value": "[variables('on-prem-vnet').DCipAddress]"},
                     "domainName":  {"value": "[variables('on-prem-vnet').domainName]"}
                 }
             },
