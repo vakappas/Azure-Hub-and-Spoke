@@ -37,7 +37,7 @@
                         "nvaip0": "10.0.0.41",
                         "nvaip1": "10.0.0.71",
                         "createGw": "yes",
-                        "gwName": "OnPremGW",
+                        "gwName": "VPNGW",
                         "linuxvmName": "LMGMT01",
                         "windowsvmName": "WMGMT01",
                         "DCvmName": "OnPremDC01",
@@ -57,13 +57,13 @@
                         "subnet4Name": "MGMT",
                         "subnet4Prefix": "10.1.0.128/27",
                         "nvaType": "ubuntu",
-                        "nvaName": "OnPremFW",
+                        "nvaName": "HubFW",
                         "nvaip0": "10.1.0.41",
                         "nvaip1": "10.1.0.71",
                         "createGw": "yes",
-                        "gwName": "hubGW",
-                        "linuxvmName": "LMGMT01",
-                        "windowsvmName": "WMGMT01"                   
+                        "gwName": "VPNGW",
+                        "linuxvmName": "HLMGMT01",
+                        "windowsvmName": "HWMGMT01"                   
                     },
                     {
                         "vnetName": "spoke-vnet",
@@ -72,9 +72,9 @@
                         "subnet1Prefix": "10.1.1.32/27",
                         "subnet2Name": "SQL",
                         "subnet2Prefix": "10.1.1.64/27",
-                        "WebvmName": "Web01",
+                        "WebvmName": "SP1Web01",
                         "WebvmSize": "Standard_D2s_v3",
-                        "SQLvmName": "SQL01",
+                        "SQLvmName": "SP1SQL01",
                         "SQLvmSize": "Standard_D4s_v3"                     
                     }
                 ]

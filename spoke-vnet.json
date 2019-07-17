@@ -124,7 +124,7 @@
                     "subnetName": { "value": "[parameters('subnet1Name')]"},
                     "vmName": {"value": "[parameters('WebvmName')]"},
                     "vmSize": {"value": "[parameters('WebvmSize')]"},
-                    "createPip":{"value": "yes"}
+                    "createPip":{"value": "no"}
                 }
             },
             "dependsOn": [
@@ -149,7 +149,7 @@
                     "subnetName": { "value": "[parameters('subnet2Name')]"},
                     "vmName": {"value": "[parameters('SQLvmName')]"},
                     "vmSize": {"value": "[parameters('SQLvmSize')]"},
-                    "createPip":{"value": "yes"}
+                    "createPip":{"value": "no"}
                 }
             },
             "dependsOn": [

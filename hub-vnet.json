@@ -294,7 +294,7 @@
         },
         {
 			"comments": "Create a Domain Controller and connect it to a given vnet and subnet",
-			"name": "ADDS-DC1",
+			"name": "Hub-DC1",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",
 			"properties": {
@@ -308,7 +308,7 @@
                     "adminPassword": {"value": "[parameters('adminPassword')]"},
                     "vnetName": {"value": "[parameters('vnetName')]"},
                     "subnetName": { "value": "[parameters('subnet3Name')]"},
-                    "vmName": {"value": "DC1"},
+                    "vmName": {"value": "HDC1"},
                     "vmSize": {"value": "[parameters('windowsvmSize')]"},
                     "createPip":{"value": "no"}
                 }
