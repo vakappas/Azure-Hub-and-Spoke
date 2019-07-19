@@ -1,0 +1,12 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "WorkspaceResourceId": {
+            "value": "/subscriptions/c5807190-2d73-4214-a65b-2416635845b8/resourceGroups/Hub-Spoke-On-Prem-rg/providers/Microsoft.OperationalInsights/workspaces/VKLAB-Workspace"
+        },
+        "WorkspaceLocation": {
+            "value": "westeurope"
+        }
+    }
+}

@@ -42,3 +42,21 @@ Get-AzVMImage -Location $loc -PublisherName "cisco" -Offer "cisco-ftdv" -Skus "f
 $agreementTerms=Get-AzMarketplaceterms -Publisher "cisco" -Product "cisco-csr-1000v" -Name "csr-azure-byol"
 
 Set-AzMarketplaceTerms -Publisher "cisco" -Product "cisco-csr-1000v" -Name "csr-azure-byol" -Terms $agreementTerms -Accept
+
+
+# Change VM Size
+$VMList = Get-AzVm | Out-GridView -OutputMode Multiple -Title ‘Please select an Azure Virtual Machine to resize.’; 
+$TargetSize = Get-AzVmSize -Location westeurope | Out-GridView -OutputMode Single -Title ‘Please select a target Azure Virtual Machine size.’; 
+foreach ($VM in $VMList) { 
+  Write-output "Resizing Microsoft Azure Virtual Machine" $VM.Name "in Resource Group" $VM.ResourceGroupName "to size" $TargetSize 
+  $VM.HardwareProfile.VmSize = "Standard_D2s_v3"
+  Update-AzVm -VM $VM -ResourceGroupName $VM.ResourceGroupName -Verbose 
+} 
+
+
+# Create the Azure Log Analytics Workspace
+
+New-AzResourceGroupDeployment -Name Monitor -ResourceGroupName $RG -TemplateFile .\ConfigureWorkspaceTemplate.json -TemplateParameterFile .\ConfigureWorkspaceParameters.json
+
+.\Install-VMInsights.ps1 -WorkspaceRegion westeurope -WorkspaceId "6efc4c9f-02ea-460d-9655-f9ce7f164976" -WorkspaceKey "5E9ovO9PhfdXntUufu648IwGrgb0tHsmzUp19vxNG9RXWPU3Kh98Kto2ytriU97MF05/fUMCcfN9NMCod0MOKw==" 
+-SubscriptionId "c5807190-2d73-4214-a65b-2416635845b8" -ResourceGroup "Hub-Spoke-On-Prem-rg"

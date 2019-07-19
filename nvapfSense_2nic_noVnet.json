@@ -90,6 +90,7 @@
     "variables": {
         "computeApiVersion": "2018-06-01",
         "OsDiskType": "StandardSSD_LRS",
+        "sourceVhdUri": "https://vklabsa.blob.core.windows.net/images/pfSense-2-4-4-OS.vhd",
         "nicTemplatePipNsg": "[uri(deployment().properties.templateLink.uri, 'nic_NSG_noSLB_PIP_static.json')]",
         "nicTemplateNoPipNsg": "[uri(deployment().properties.templateLink.uri, 'nic_NSG_noSLB_noPIP_static.json')]",
         "nicTemplateNoPipNoNsg": "[uri(deployment().properties.templateLink.uri, 'nic_noNSG_noSLB_noPIP_static.json')]",
@@ -258,7 +259,29 @@
             "dependsOn": [
                 "[concat(variables('slbName'),'-int')]"
             ]
-		},
+        },
+        {
+            "comments": "Create a Managed disk from the already uploaded pfSense VHD",
+            "name": "[concat(parameters('vmName'), '-', copyIndex(1),'-disk')]",
+            "type": "Microsoft.Compute/disks",
+            "apiVersion": "[variables('computeApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "sku": {
+                "name": "[variables('OsDiskType')]"
+            },
+            "properties": {
+                "osType": "Linux",
+                "creationData": {
+                    "createOption": "Import",
+                    "sourceUri": "[variables('sourceVhdUri')]"
+                }
+            },
+            "copy": {
+                "name": "[concat(parameters('vmName'), '-', copyIndex(1),'-disk')]",
+                "count": "[parameters('vmCount')]"
+            }
+        },
         {
             "comments": "Deploy Linux VM as Virtual Network Appliance",
             "type": "Microsoft.Compute/virtualMachines",
@@ -273,30 +296,13 @@
                     "vmSize": "[variables('settings')['vmSize']]"
                 },
                 "storageProfile": {
-                    "imageReference": {
-                        "publisher": "[variables('settings')['publisher']]",
-                        "offer": "[variables('settings')['product']]",
-                        "sku": "[variables('settings')['sku']]",
-                        "version": "latest"
-                    },
                     "osDisk": {
-                        "name": "[concat(parameters('vmName'), '-', copyIndex(1),'-disk')]",
-                        "createOption": "FromImage",
-                        "managedDisk": {
-                            "storageAccountType": "[variables('OsDiskType')]"
+                        "createOption": "Attach",
+                        "managedDisk":{
+                            "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'), '-', copyIndex(1),'-disk'))]"
                         },
-                        "caching": "ReadWrite"
-                    },
-                    "dataDisks": []
-                },
-                "osProfile": {
-                    "computerName": "[concat(parameters('vmName'), '-', copyIndex(1))]",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": false
-                    },
-                    "secrets": [],
-                    "adminPassword": "[parameters('adminPassword')]"
+                        "osType": "Linux"
+                    }
                 },
                 "networkProfile": {
                     "networkInterfaces": [

@@ -49,7 +49,7 @@
         "nvaType": {
             "defaultValue": "csr",
             "type": "string",
-            "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
+            "allowedValues": ["csr", "ftdv", "asa", "ubuntu", "pfSense"]
         },
         "nvaName": {
             "defaultValue": "myNVA",
@@ -113,7 +113,7 @@
         "deploymentApiVersion": "2017-05-10",
         "linuxvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
         "windowsvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'windowsVM.json')]",
-        "nvaTemplateUri": "[if(equals(parameters('nvaType'), 'ubuntu'),uri(deployment().properties.templateLink.uri,'nvaLinux_2nic_noVnet.json'),uri(deployment().properties.templateLink.uri,'nva_2nic.json') )]",
+        "nvaTemplateUri": "[if(equals(parameters('nvaType'), 'pfSense'),uri(deployment().properties.templateLink.uri,'nvapfSense_2nic_noVnet.json'),uri(deployment().properties.templateLink.uri,'nva_2nic.json') )]",
         "gwTemplateUri": "[uri(deployment().properties.templateLink.uri, 'vpnGw.json')]",
         "gwPipUri": "[uri(deployment().properties.templateLink.uri, 'pipDynamic.json')]",
         "gwPIPName": "[concat(parameters('gwName'),'-pip')]"
