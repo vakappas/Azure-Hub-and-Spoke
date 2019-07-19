@@ -15,9 +15,9 @@
             "type": "string"
         },
         "vmType": {
-            "defaultValue": "ubuntu",
+            "defaultValue": "pfSense",
             "type": "string",
-            "allowedValues": ["ubuntu", "centos"]
+            "allowedValues": ["ubuntu", "centos", "pfSense"]
         },
         "vmCount": {
             "defaultValue": 1,

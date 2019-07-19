@@ -6,12 +6,12 @@ Select-AzSubscription -Subscription "vakappas - Internal Consumption"
 
 #Deploy VM to Azure using Template
 # Create a Resource Group
-$RG = "Hub-Spoke-On-Prem-rg"
+$RG = "pfSense-rg"
 $Location = "West Europe"
 ## $url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Hub-net-2-firewalls-1-router/hub-vnet.json"
 
 ## url=https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/master/spoke-vnet.json
-$url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Hub-Spoke-On-Prem/Hub-Spoke-On-Prem-master.json"
+$url="https://raw.githubusercontent.com/vakappas/Azure-Hub-and-Spoke/Hub-Spoke-On-Prem/hub-vnet.json"
 
 New-AzResourceGroup -Name $RG -Location $Location
 
@@ -20,6 +20,7 @@ $templateParameters = @{
 
     adminUsername = $cred.UserName
     adminPassword = $cred.Password
+    nvaType = "pfSense"
 
 }
 
