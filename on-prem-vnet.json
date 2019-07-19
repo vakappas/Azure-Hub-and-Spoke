@@ -15,7 +15,7 @@
             "type": "string"
         },
         "subnet1Name": {
-            "defaultValue": "MGMT",
+            "defaultValue": "DMZ-out",
             "type": "string"
         },
         "subnet1Prefix": {
@@ -23,7 +23,7 @@
             "type": "string"
         },
         "subnet2Name": {
-            "defaultValue": "Clients",
+            "defaultValue": "DMZ-in",
             "type": "string"
         },
         "subnet2Prefix": {
@@ -39,17 +39,33 @@
             "type": "string"
         },
         "subnet4Name": {
-            "defaultValue": "Servers",
+            "defaultValue": "MGMT",
             "type": "string"
         },
         "subnet4Prefix": {
             "defaultValue": "10.1.0.128/27",
             "type": "string"
         },
+        "subnet5Name": {
+            "defaultValue": "Clients",
+            "type": "string"
+        },
+        "subnet5Prefix": {
+            "defaultValue": "10.1.0.160/27",
+            "type": "string"
+        },
+        "subnet6Name": {
+            "defaultValue": "Servers",
+            "type": "string"
+        },
+        "subnet6Prefix": {
+            "defaultValue": "10.1.0.192/27",
+            "type": "string"
+        },
         "nvaType": {
-            "defaultValue": "ubuntu",
+            "defaultValue": "pfSense",
             "type": "string",
-            "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
+            "allowedValues": ["csr", "ftdv", "asa", "ubuntu", "pfSense"]
         },
         "nvaName": {
             "defaultValue": "myNVA",
@@ -132,14 +148,14 @@
         "linuxvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
         "windowsvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'windowsVM.json')]",
         "addcvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'ADDCVM.json')]",
-        "nvaTemplateUri": "[if(equals(parameters('nvaType'), 'ubuntu'),uri(deployment().properties.templateLink.uri,'nvaLinux_2nic_noVnet.json'),uri(deployment().properties.templateLink.uri,'nva_2nic.json') )]",
+        "nvaTemplateUri": "[if(equals(parameters('nvaType'), 'pfSense'),uri(deployment().properties.templateLink.uri,'nvapfSense_2nic_noVnet.json'),uri(deployment().properties.templateLink.uri,'nva_2nic.json') )]",
         "gwTemplateUri": "[uri(deployment().properties.templateLink.uri, 'vpnGw.json')]",
         "gwPipUri": "[uri(deployment().properties.templateLink.uri, 'pipDynamic.json')]",
         "gwPIPName": "[concat(parameters('gwName'),'-pip')]"
    },
     "resources": [
         {
-            "comments": "Create Vnet with four subnets and a Gateway Subnet",
+            "comments": "Create Vnet with six subnets and a Gateway Subnet",
             "type": "Microsoft.Network/virtualNetworks",
             "name": "[parameters('vnetName')]",
             "apiVersion": "[variables('networkApiVersion')]",
@@ -179,6 +195,18 @@
                         "name": "[parameters('subnet4Name')]",
                         "properties": {
                             "addressPrefix": "[parameters('subnet4Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet5Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet5Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet6Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet6Prefix')]"
                         }
                     }
 				]
@@ -233,7 +261,7 @@
         },
         {
         
-			"comments": "Create a Linux VM as an NVA with 2nics and connect it to given vnet and subnets",
+			"comments": "Create a pfSense VM as an NVA with 2nics and connect it to given vnet and subnets",
 			"name": "[parameters('nvaName')]",
             "type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('deploymentApiVersion')]",

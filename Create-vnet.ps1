@@ -21,6 +21,7 @@ $templateParameters = @{
     adminUsername = $cred.UserName
     adminPassword = $cred.Password
     nvaType = "pfSense"
+    domainName = "vklab.local"
 
 }
 
