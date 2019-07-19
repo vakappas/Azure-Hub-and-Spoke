@@ -17,7 +17,7 @@
         "vmType": {
             "defaultValue": "pfSense",
             "type": "string",
-            "allowedValues": ["ubuntu", "centos", "pfSense"]
+            "allowedValues": ["pfSense"]
         },
         "vmCount": {
             "defaultValue": 1,
@@ -100,21 +100,6 @@
             "nic0": "[concat(parameters('ip0'), '1')]",
             "nic1": "[concat(parameters('ip1'), '1')]"
         },
-        "settingsTable": {
-            "ubuntu": {
-                "product": "UbuntuServer",
-                "publisher": "Canonical",
-                "sku": "16.04.0-LTS",
-                "vmSize": "[parameters('vmSize')]"
-            },
-            "centos": {
-                "product": "CentOS",
-                "publisher": "openlogic",
-                "sku": "7.6",
-                "vmSize": "[parameters('vmSize')]"
-            }
-        },
-        "settings": "[variables('settingsTable')[parameters('vmType')]]",
         "avSetName": "[concat(parameters('vmName'),'AvSet')]",
         "slbName": "[concat(parameters('vmName'), '-slb')]",
         "slbBackendName": "[concat(parameters('vmName'), '-slbBackend')]",
@@ -293,7 +278,7 @@
 					"id": "[resourceId('Microsoft.Compute/availabilitySets', variables('avSetName'))]"
 				},
                 "hardwareProfile": {
-                    "vmSize": "[variables('settings')['vmSize']]"
+                    "vmSize": "[parameters('vmSize')]"
                 },
                 "storageProfile": {
                     "osDisk": {
@@ -381,31 +366,6 @@
             ],
             "copy": {
                 "name": "[concat(parameters('vmName'), '-nic1')]",
-                "count": "[parameters('vmCount')]"
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('vmName'), '-', copyIndex(1), '/installcustomscript')]",
-            "apiVersion": "2015-05-01-preview",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "[parameters('scriptUri')]"
-                    ],
-                    "commandToExecute": "[parameters('scriptCmd')]"
-                }
-            },
-            "dependsOn": [
-                "[parameters('vmName')]"
-            ],
-            "copy": {
-                "name": "[concat(parameters('vmName'), '-script')]",
                 "count": "[parameters('vmCount')]"
             }
         }
