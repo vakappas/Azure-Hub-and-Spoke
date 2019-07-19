@@ -247,6 +247,10 @@
         },
         {
             "comments": "Create a Managed disk from the already uploaded pfSense VHD",
+            "copy": {
+                "name": "DiskLoop",
+                "count": "[parameters('vmCount')]"
+            },
             "name": "[concat(parameters('vmName'), '-', copyIndex(1),'-disk')]",
             "type": "Microsoft.Compute/disks",
             "apiVersion": "[variables('computeApiVersion')]",
@@ -261,10 +265,6 @@
                     "createOption": "Import",
                     "sourceUri": "[variables('sourceVhdUri')]"
                 }
-            },
-            "copy": {
-                "name": "[concat(parameters('vmName'), '-', copyIndex(1),'-disk')]",
-                "count": "[parameters('vmCount')]"
             }
         },
         {
