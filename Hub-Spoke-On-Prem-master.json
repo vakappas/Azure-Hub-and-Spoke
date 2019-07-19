@@ -35,7 +35,7 @@
                         "subnet5Name": "Clients",
                         "subnet5Prefix": "10.0.0.160/27",
                         "subnet6Name": "Servers",
-                        "subnet5Prefix": "10.0.0.192/27",
+                        "subnet6Prefix": "10.0.0.192/27",
                         "nvaType": "pfSense",
                         "nvaName": "OnPremFW",
                         "nvaip0": "10.0.0.41",
