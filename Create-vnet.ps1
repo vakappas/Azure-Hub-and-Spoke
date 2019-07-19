@@ -59,5 +59,5 @@ foreach ($VM in $VMList) {
 
 New-AzResourceGroupDeployment -Name Monitor -ResourceGroupName $RG -TemplateFile .\ConfigureWorkspaceTemplate.json -TemplateParameterFile .\ConfigureWorkspaceParameters.json
 
-.\Install-VMInsights.ps1 -WorkspaceRegion westeurope -WorkspaceId "6efc4c9f-02ea-460d-9655-f9ce7f164976" -WorkspaceKey "5E9ovO9PhfdXntUufu648IwGrgb0tHsmzUp19vxNG9RXWPU3Kh98Kto2ytriU97MF05/fUMCcfN9NMCod0MOKw==" 
--SubscriptionId "c5807190-2d73-4214-a65b-2416635845b8" -ResourceGroup "Hub-Spoke-On-Prem-rg"
+.\Install-VMInsights.ps1 -WorkspaceRegion westeurope -WorkspaceId "ID" -WorkspaceKey "KEY" 
+-SubscriptionId "ID" -ResourceGroup "Hub-Spoke-On-Prem-rg"
