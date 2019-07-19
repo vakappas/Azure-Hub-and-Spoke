@@ -215,37 +215,6 @@
             }
 		},
 		{
-			"comments": "Optionally, create an internal load balancer",
-            "name": "[concat(variables('slbName'),'-int')]",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "2017-05-10",
-			"properties": {
-				"mode": "Incremental",
-				"templateLink": {
-					"uri": "[variables('LBTemplateUri')]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters":  "[variables('deployLBintParameters')]"
-			}
-		},
-		{
-			"comments": "Optionally, create an external load balancer. Wait until the internal has been created, there seems to be some conflict when creating both at the same time",
-            "name": "[concat(variables('slbName'),'-int')]",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "2017-05-10",
-			"properties": {
-				"mode": "Incremental",
-				"templateLink": {
-					"uri": "[variables('LBTemplateUri')]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters":  "[variables('deployLBextParameters')]"
-			},
-            "dependsOn": [
-                "[concat(variables('slbName'),'-int')]"
-            ]
-        },
-        {
             "comments": "Create a Managed disk from the already uploaded pfSense VHD",
             "copy": {
                 "name": "DiskLoop",
