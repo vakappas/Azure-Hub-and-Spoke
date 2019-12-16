@@ -40,7 +40,7 @@
                         "nvaName": "OnPremFW",
                         "nvaip0": "10.0.0.41",
                         "nvaip1": "10.0.0.71",
-                        "createGw": "yes",
+                        "createGw": "no",
                         "gwName": "VPNGW",
                         "linuxvmName": "LMGMT01",
                         "windowsvmName": "WMGMT01",
@@ -64,7 +64,7 @@
                         "nvaName": "HubFW",
                         "nvaip0": "10.1.0.41",
                         "nvaip1": "10.1.0.71",
-                        "createGw": "yes",
+                        "createGw": "no",
                         "gwName": "HVPNGW",
                         "linuxvmName": "HLMGMT01",
                         "windowsvmName": "HWMGMT01"                   
