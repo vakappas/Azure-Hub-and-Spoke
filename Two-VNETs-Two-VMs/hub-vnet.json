@@ -1,0 +1,240 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "defaultValue": "TGN_HUB",
+            "type": "string"
+        },
+        "vnetPrefix": {
+            "defaultValue": "10.48.128.0/20",
+            "type": "string"
+        },
+        "subnet1Name": {
+            "defaultValue": "TGN_AZR",
+            "type": "string"
+        },
+        "subnet1Prefix": {
+            "defaultValue": "10.48.128.0/24",
+            "type": "string"
+        },
+        "subnet2Name": {
+            "defaultValue": "TGN_AZR_NMGMT",
+            "type": "string"
+        },
+        "subnet2Prefix": {
+            "defaultValue": "10.48.129.0/24",
+            "type": "string"
+        },
+        "subnet3Name": {
+            "defaultValue": "TGN_AZR_SRVs1",
+            "type": "string"
+        },
+        "subnet3Prefix": {
+            "defaultValue": "10.48.130.0/24",
+            "type": "string"
+        },
+        "subnet4Name": {
+            "defaultValue": "TGN_AZR_SRVs2",
+            "type": "string"
+        },
+        "subnet4Prefix": {
+            "defaultValue": "10.48.131.0/24",
+            "type": "string"
+        },
+        "config": {
+            "type": "object",
+            "defaultValue": {
+                "NVAs": [
+                    {
+                        "nvaName": "AZR_ASAv",
+                        "nvaSize": "Standard_D2_v2",
+                        "nvaip0": "10.48.128.100",
+                        "nvaip1": "10.48.129.100",
+                        "nvaType": "asa"
+                        
+                    },
+                    {
+                        "nvaName": "AZR_FTDv",
+                        "nvaSize": "Standard_D3_v2",
+                        "nvaip0": "10.48.128.250",
+                        "nvaip1": "10.48.129.250",
+                        "nvaType": "ftdv"
+                    },
+                    {
+                        "nvaName": "AZR_CSR",
+                        "nvaSize": "Standard_D3_v2",
+                        "nvaip0": "10.48.129.254",
+                        "nvaip1": "10.48.130.254",
+                        "nvaip2": "10.48.131.254",
+                        "nvaType": "csr"
+                    }
+                ]
+            }
+        },
+        "vmName": {
+            "type": "string",
+            "defaultValue": "myVm"
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "lab-user"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        }
+    },
+    "variables": {
+        "networkApiVersion": "2018-04-01",
+        "computeApiVersion": "2018-06-01",
+        "storageApiVersion": "2018-07-01",
+        "deploymentApiVersion": "2017-05-10",
+        "vmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
+        "nvaTemplateUri": "[uri(deployment().properties.templateLink.uri,'nva_2nic.json')]",
+        "nva3nicsTemplateUri": "[uri(deployment().properties.templateLink.uri,'nva_3nic.json')]",
+        "asav":"[parameters('config')['NVAs'][0]]",
+        "ftdv": "[parameters('config')['NVAs'][1]]",
+        "csr": "[parameters('config')['NVAs'][2]]"
+   },
+    "resources": [
+        {
+            "comments": "Create Vnet with four subnets",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('vnetName')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1Prefix')]"                            
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet3Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet3Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet4Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet4Prefix')]"
+                        }
+                    }
+				]
+            },
+            "resources": [],
+            "dependsOn": [
+            ]
+        },
+        {
+			"comments": "Create a Cisco ASA NVA with 2nics and connect it to given vnet and subnets",
+			"name": "ASAv",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('nvaTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vmType": {"value": "[variables('asav').nvaType]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnet0Name": { "value": "[parameters('subnet1Name')]"},
+                    "subnet1Name": { "value": "[parameters('subnet2Name')]"},
+                    "ip0": {"value": "[variables('asav').nvaip0]"},
+                    "ip1": {"value": "[variables('asav').nvaip1]"},
+                    "pipName":{"value": "asav-publicIP"},
+                    "vmName": {"value": "[variables('asav').nvaName]"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        },
+        {
+			"comments": "Create a Cisco FTD NVA with 2nics and connect it to given vnet and subnets",
+			"name": "FTDv",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('nvaTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vmType": {"value": "[variables('ftdv').nvaType]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnet0Name": { "value": "[parameters('subnet1Name')]"},
+                    "subnet1Name": { "value": "[parameters('subnet2Name')]"},
+                    "ip0": {"value": "[variables('ftdv').nvaip0]"},
+                    "ip1": {"value": "[variables('ftdv').nvaip1]"},
+                    "pipName":{"value": "ftdv-publicIP"},
+                    "vmName": {"value": "[variables('ftdv').nvaName]"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        },
+        {
+			"comments": "Create a Cisco CSR Router with 3nics and connect it to given vnet and subnets",
+			"name": "CSR",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('nva3nicsTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vmType": {"value": "[variables('csr').nvaType]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnet0Name": { "value": "[parameters('subnet2Name')]"},
+                    "subnet1Name": { "value": "[parameters('subnet3Name')]"},
+                    "subnet2Name": { "value": "[parameters('subnet4Name')]"},
+                    "ip0": {"value": "[variables('csr').nvaip0]"},
+                    "ip1": {"value": "[variables('csr').nvaip1]"},
+                    "ip2": {"value": "[variables('csr').nvaip2]"},
+                    "pipName":{"value": "csr-publicIP"},
+                    "vmName": {"value": "[variables('csr').nvaName]"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        }        
+     ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}

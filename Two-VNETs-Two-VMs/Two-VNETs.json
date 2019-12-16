@@ -1,0 +1,134 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "lab-user",
+            "metadata": {
+                "description": "Password to be configured in the NVA (user is lab-user)"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "defaultValue": null,
+            "metadata": {
+                "description": "Password to be configured in the NVA (user is lab-user)"
+            }
+        },
+        "config": {
+            "type": "object",
+            "defaultValue": {
+                "vnets": [
+                    {
+                        "vnetName": "vnet1",
+                        "vnetPrefix": "10.1.0.0/24",
+                        "EXT": "10.1.0.0/26",
+                        "DMZ": "10.1.0.64/26",
+                        "LAN": "10.1.0.128/26",
+                        "vmName": "vnet1-srv01",
+                        "nvaName": "vnet1-nva",
+                        "nvaType": "csr",
+                        "nvaip0": "10.1.0.11",
+                        "nvaip1": "10.1.0.71",
+                        "createPip": "yes"
+                    },
+                    {
+                        "vnetName": "vnet2",
+                        "vnetPrefix": "10.2.0.0/24",
+                        "EXT": "10.2.0.0/26",
+                        "DMZ": "10.2.0.64/26",
+                        "LAN": "10.2.0.128/26",
+                        "vmName": "vnet2-srv01",
+                        "nvaName": "vnet2-nva",
+                        "nvaType": "csr",
+                        "nvaip0": "10.2.0.11",
+                        "nvaip1": "10.2.0.71",
+                        "createPip": "yes"
+                    }
+                ]
+            }
+        }
+    },
+    "variables": {
+        "networkApiVersion": "2018-08-01",
+        "deploymentApiVersion": "2017-05-10",
+        "spokeTemplateUri": "[uri(deployment().properties.templateLink.uri, 'spoke-vnet.json')]",
+        "first-vnet": "[parameters('config')['vnets'][0]]",
+        "second-vnet": "[parameters('config')['vnets'][1]]"
+    },
+    "resources": [
+		{
+			"comments": "Create a VNET with an NVA and a VM",
+			"name": "East",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('spokeTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[variables('first-vnet').vnetName]"},
+                    "vnetPrefix": {"value": "[variables('first-vnet').vnetPrefix]"},                    
+                    "subnet1Name": {"value": "EXT"},
+                    "subnet1Prefix": {"value": "[variables('first-vnet').EXT]"},
+                    "subnet2Name": {"value": "DMZ"},
+                    "subnet2Prefix": {"value": "[variables('first-vnet').DMZ]"},
+                    "subnet3Name": {"value": "LAN"},
+                    "subnet3Prefix": {"value": "[variables('first-vnet').LAN]"},
+                    "vmName": {"value": "[variables('first-vnet').vmName]"},
+                    "vmSize": {"value": "Standard_B1s"},                
+                    "nvaName": {"value": "[variables('first-vnet').nvaName]"},
+                    "nvaSize": {"value": "Standard_B1s"},
+                    "nvaType": {"value": "[variables('first-vnet').nvatype]"},
+                    "nvaip0": {"value": "[variables('first-vnet').nvaip0]"},
+                    "nvaip1": {"value": "[variables('first-vnet').nvaip1]"},
+                    "createPip": {"value": "[variables('first-vnet').createPip]"}           
+                }
+            },
+            "dependsOn": [
+
+            ]
+        },
+        {
+			"comments": "Create a VNET with an NVA and a VM",
+			"name": "West",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('spokeTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[variables('second-vnet').vnetName]"},
+                    "vnetPrefix": {"value": "[variables('second-vnet').vnetPrefix]"},                    
+                    "subnet1Name": {"value": "EXT"},
+                    "subnet1Prefix": {"value": "[variables('second-vnet').EXT]"},
+                    "subnet2Name": {"value": "DMZ"},
+                    "subnet2Prefix": {"value": "[variables('second-vnet').DMZ]"},
+                    "subnet3Name": {"value": "LAN"},
+                    "subnet3Prefix": {"value": "[variables('second-vnet').LAN]"},
+                    "vmName": {"value": "[variables('second-vnet').vmName]"},                              
+                    "vmSize": {"value": "Standard_B1s"},                   
+                    "nvaName": {"value": "[variables('second-vnet').nvaName]"},
+                    "nvaSize": {"value": "Standard_B1s"},
+                    "nvaType": {"value": "[variables('second-vnet').nvatype]"},
+                    "nvaip0": {"value": "[variables('second-vnet').nvaip0]"},
+                    "nvaip1": {"value": "[variables('second-vnet').nvaip1]"},
+                    "createPip": {"value": "[variables('second-vnet').createPip]"}
+                }
+            },
+            "dependsOn": [
+
+            ]   			
+        }
+    ]
+}

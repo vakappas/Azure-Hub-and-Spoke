@@ -1,0 +1,166 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "defaultValue": "spoke-vnet",
+            "type": "string"
+        },
+        "vnetPrefix": {
+            "defaultValue": "10.0.1.0/24",
+            "type": "string"
+        },        
+        "subnet1Name": {
+            "defaultValue": "Front",
+            "type": "string"
+        },
+        "subnet1Prefix": {
+            "defaultValue": "10.0.1.0/27",
+            "type": "string"
+        },
+        "subnet2Name": {
+            "defaultValue": "Back",
+            "type": "string"
+        },
+        "subnet2Prefix": {
+            "defaultValue": "10.0.1.32/27",
+            "type": "string"
+        },
+        "linuxvmName": {
+            "type": "string",
+            "defaultValue": "mylinuxVm"
+        },
+        "linuxvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "windowsvmName": {
+            "type": "string",
+            "defaultValue": "mywindowsVm"
+        },
+        "windowsvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "WebvmName": {
+            "type": "string",
+            "defaultValue": "Web"
+        },
+        "WebvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "SQLvmName": {
+            "type": "string",
+            "defaultValue": "SQL"
+        },
+        "SQLvmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "lab-user"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        }
+    },
+    "variables": {
+        "networkApiVersion": "2018-04-01",
+        "computeApiVersion": "2018-06-01",
+        "storageApiVersion": "2018-07-01",
+        "deploymentApiVersion": "2017-05-10",
+        "linuxvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
+        "windowsvmTemplateUri": "[uri(deployment().properties.templateLink.uri,'windowsVM.json')]"
+   },
+    "resources": [
+        {
+            "comments": "Create a Vnet with two subnets",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('vnetName')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1Prefix')]"                            
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2Prefix')]"
+                        }
+                    }
+				]
+            },
+            "resources": [],
+            "dependsOn": [
+            ]
+        },        
+        {
+			"comments": "Create a Windows VM as a Web Server and connect it to a given vnet and subnet",
+			"name": "[parameters('WebvmName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('windowsvmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet1Name')]"},
+                    "vmName": {"value": "[parameters('WebvmName')]"},
+                    "vmSize": {"value": "[parameters('WebvmSize')]"},
+                    "createPip":{"value": "no"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        },
+        {
+			"comments": "Create a Windows VM as a SQL Server and connect it to a given vnet and subnet",
+			"name": "[parameters('SQLvmName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('windowsvmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet2Name')]"},
+                    "vmName": {"value": "[parameters('SQLvmName')]"},
+                    "vmSize": {"value": "[parameters('SQLvmSize')]"},
+                    "createPip":{"value": "no"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        }        
+     ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}

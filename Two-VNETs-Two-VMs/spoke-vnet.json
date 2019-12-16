@@ -1,0 +1,188 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "defaultValue": "spoke-vnet",
+            "type": "string"
+        },
+        "vnetPrefix": {
+            "defaultValue": "192.168.100.0/24",
+            "type": "string"
+        },
+        "subnet1Name": {
+            "defaultValue": "subnet1",
+            "type": "string"
+        },
+        "subnet1Prefix": {
+            "defaultValue": "192.168.100.0/26",
+            "type": "string"
+        },
+        "subnet2Name": {
+            "defaultValue": "subnet2",
+            "type": "string"
+        },
+        "subnet2Prefix": {
+            "defaultValue": "192.168.100.64/26",
+            "type": "string"
+        },
+        "subnet3Name": {
+            "defaultValue": "subnet3",
+            "type": "string"
+        },
+        "subnet3Prefix": {
+            "defaultValue": "192.168.100.128/26",
+            "type": "string"
+        },
+        "vmName": {
+            "type": "string",
+            "defaultValue": "myVm"
+        },
+        "nvaName": {
+            "type": "string",
+            "defaultValue": "nva"
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "nvaSize": {
+            "type": "string",
+            "defaultValue": "Standard_B1s"
+        },
+        "nvaType": {
+            "defaultValue": "csr",
+            "type": "string",
+            "allowedValues": ["csr", "ftdv", "asa", "ubuntu"]
+        },
+        "nvaip0": {
+            "defaultValue": "192.168.100.11",
+            "type": "string",
+            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
+        },
+        "nvaip1": {
+            "defaultValue": "192.168.100.71",
+            "type": "string",
+            "metadata": { "description": "This string will be completed with the copyIndex: .101, .102, etc" }
+        },
+        "createPip": {
+            "defaultValue": "no",
+            "type": "string",
+            "allowedValues": ["yes", "no"]
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "lab-user"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        }
+    },
+    "variables": {
+        "networkApiVersion": "2018-04-01",
+        "computeApiVersion": "2018-06-01",
+        "storageApiVersion": "2018-07-01",
+        "deploymentApiVersion": "2017-05-10",
+        "vmTemplateUri": "[uri(deployment().properties.templateLink.uri,'linuxVM.json')]",
+        "nvaTemplateUri": "[if(equals(parameters('nvaType'), 'ubuntu'),uri(deployment().properties.templateLink.uri,'nvaLinux_2nic_noVnet.json'),uri(deployment().properties.templateLink.uri,'nva_2nic.json') )]"
+   },
+    "resources": [
+        {
+            "comments": "Create Vnet with three subnets",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('vnetName')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1Prefix')]"                            
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet3Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet3Prefix')]"
+                        }
+                    }
+				]
+            },
+            "resources": [],
+            "dependsOn": [ ]
+        },
+        {
+        
+			"comments": "Create a Linux VM as an NVA with 2nics and connect it to given vnet and subnets",
+			"name": "[parameters('nvaName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('nvaTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vmType": {"value": "[parameters('nvaType')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnet0Name": { "value": "[parameters('subnet1Name')]"},
+                    "subnet1Name": { "value": "[parameters('subnet2Name')]"},
+                    "ip0": {"value": "[parameters('nvaip0')]"},
+                    "ip1": {"value": "[parameters('nvaip1')]"},
+                    "createPip": {"value": "[parameters('createPip')]"},
+                    "pipName":{"value": "[concat(parameters('nvaName'), '-pip')]"},
+                    "vmName": {"value": "[parameters('nvaName')]"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        },
+        {
+			"comments": "Create an Ubuntu VM and connect it to a given vnet and subnet",
+			"name": "[parameters('vmName')]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('vmTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				 "parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[parameters('vnetName')]"},
+                    "subnetName": { "value": "[parameters('subnet3Name')]"},
+                    "vmName": {"value": "[parameters('vmName')]"},
+                    "vmSize": {"value": "[parameters('vmSize')]"},
+                    "createPip":{"value": "no"}
+                }
+            },
+            "dependsOn": [
+                "[parameters('vnetName')]"
+            ]
+        }
+     ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}

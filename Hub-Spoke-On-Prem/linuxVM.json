@@ -1,0 +1,133 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "defaultValue": "myVnet",
+            "type": "string"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string"
+        },
+        "subnetName": {
+            "defaultValue": "serverSubnet",
+            "type": "string"
+		},
+        "adminUsername": {
+            "defaultValue": null,
+            "type": "string"
+        },
+        "adminPassword": {
+            "defaultValue": null,
+            "type": "securestring"
+        },
+        "vmName": {
+            "defaultValue": "myvm",
+            "type": "string"
+        },
+        "vmType": {
+            "defaultValue": "ubuntu",
+            "type": "string",
+            "allowedValues": [
+                "ubuntu"
+            ]
+        },
+        "vmSize": {
+            "defaultValue": "Standard_B1s",
+            "type": "string"
+        },
+        "createPip": {
+            "defaultValue": "yes",
+            "type": "string",
+            "allowedValues": ["yes", "no"]
+        }
+    },
+ 
+    "variables": {
+        "nicName": "[concat(parameters('vmName'),'-nic')]",
+        "pipName": "[concat(parameters('vmName'),'-pip')]",
+		"diskName": "[concat(parameters('vmName'),'-disk')]",
+		"apiVersion": "2017-03-30",
+        "nicTemplateUriHash": {
+            "yes": "[uri(deployment().properties.templateLink.uri, 'nic_NSG_noSLB_PIP_dynamic.json')]",
+            "no": "[uri(deployment().properties.templateLink.uri, 'nic_noNSG_noSLB_noPIP_dynamic.json')]"
+        },
+        "nicTemplateURI": "[variables('nicTemplateUriHash')[parameters('createPip')]]",
+        "skuDataTable": {
+            "ubuntu": {
+                "sku": "16.04.0-LTS",
+                "publisher": "canonical",
+                "offer": "UbuntuServer",
+                "size": "[parameters('vmSize')]"
+            }
+        },
+        "skuData": "[variables('skuDataTable')[parameters('vmType')]]"
+    },        
+    "resources": [
+		{	
+			"comments": "VMs created and linked to NICs and storage account",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('vmName')]",
+            "apiVersion": "[variables('apiVersion')]",
+            "location": "[parameters('location')]",
+            "properties": {
+				"hardwareProfile": {
+                    "vmSize": "[variables('skuData')['size']]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('skuData')['publisher']]",
+                        "offer": "[variables('skuData')['offer']]",
+                        "sku": "[variables('skuData')['sku']]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "createOption": "FromImage",
+                        "diskSizeGB": 31
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "secrets": [],
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [
+            ],
+            "dependsOn": [
+                "[variables('nicName')]"
+            ]
+        },
+		{
+            "comments": "Create NIC for the VM with or without public IP",
+			"name": "[variables('nicName')]",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2016-06-01",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('nicTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters":  {
+                    "pipName": { "value": "[variables('pipName')]" },
+                    "nicName": { "value": "[variables('nicName')]" },
+                    "vnetName": { "value": "[parameters('vnetName')]" },
+                    "subnetName": { "value": "[parameters('subnetName')]"}
+                }
+			},
+            "dependsOn": []
+        }
+    ]
+}

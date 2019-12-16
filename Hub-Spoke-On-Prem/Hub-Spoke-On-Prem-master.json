@@ -1,0 +1,215 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "lab-user",
+            "metadata": {
+                "description": "Password to be configured in the NVA (user is lab-user)"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "defaultValue": null,
+            "metadata": {
+                "description": "Password to be configured in the NVA (user is lab-user)"
+            }
+        },
+        "config": {
+            "type": "object",
+            "defaultValue": {
+                "vnets": [
+                    {
+                        "vnetName": "on-prem-vnet",
+                        "vnetPrefix": "10.0.0.0/24",
+                        "GatewaySubnetPrefix": "10.0.0.0/27",
+                        "subnet1Name": "DMZ-Out",
+                        "subnet1Prefix": "10.0.0.32/27",
+                        "subnet2Name": "DMZ-In",
+                        "subnet2Prefix": "10.0.0.64/27",
+                        "subnet3Name": "ADDS",
+                        "subnet3Prefix": "10.0.0.96/27",
+                        "subnet4Name": "MGMT",
+                        "subnet4Prefix": "10.0.0.128/27",
+                        "subnet5Name": "Clients",
+                        "subnet5Prefix": "10.0.0.160/27",
+                        "subnet6Name": "Servers",
+                        "subnet6Prefix": "10.0.0.192/27",
+                        "nvaType": "pfSense",
+                        "nvaName": "OnPremFW",
+                        "nvaip0": "10.0.0.41",
+                        "nvaip1": "10.0.0.71",
+                        "createGw": "yes",
+                        "gwName": "VPNGW",
+                        "linuxvmName": "LMGMT01",
+                        "windowsvmName": "WMGMT01",
+                        "DCvmName": "OnPremDC01",
+                        "DCipAddress": "10.0.0.101",
+                        "domainName": "vklab.local"                        
+                    },
+                    {
+                        "vnetName": "hub-vnet",
+                        "vnetPrefix": "10.1.0.0/24",
+                        "GatewaySubnetPrefix": "10.1.0.0/27",
+                        "subnet1Name": "DMZ-Out",
+                        "subnet1Prefix": "10.1.0.32/27",
+                        "subnet2Name": "DMZ-In",
+                        "subnet2Prefix": "10.1.0.64/27",
+                        "subnet3Name": "ADDS",
+                        "subnet3Prefix": "10.1.0.96/27",
+                        "subnet4Name": "MGMT",
+                        "subnet4Prefix": "10.1.0.128/27",
+                        "nvaType": "pfSense",
+                        "nvaName": "HubFW",
+                        "nvaip0": "10.1.0.41",
+                        "nvaip1": "10.1.0.71",
+                        "createGw": "yes",
+                        "gwName": "HVPNGW",
+                        "linuxvmName": "HLMGMT01",
+                        "windowsvmName": "HWMGMT01"                   
+                    },
+                    {
+                        "vnetName": "spoke-vnet",
+                        "vnetPrefix": "10.1.1.0/24",
+                        "subnet1Name": "Web",
+                        "subnet1Prefix": "10.1.1.32/27",
+                        "subnet2Name": "SQL",
+                        "subnet2Prefix": "10.1.1.64/27",
+                        "WebvmName": "SP1Web01",
+                        "WebvmSize": "Standard_D2s_v3",
+                        "SQLvmName": "SP1SQL01",
+                        "SQLvmSize": "Standard_D4s_v3"                     
+                    }
+                ]
+            }
+        }
+    },
+    "variables": {
+        "networkApiVersion": "2018-08-01",
+        "deploymentApiVersion": "2017-05-10",
+        "onpremTemplateUri": "[uri(deployment().properties.templateLink.uri, 'on-prem-vnet.json')]",
+        "hubTemplateUri": "[uri(deployment().properties.templateLink.uri, 'hub-vnet.json')]",
+        "spokeTemplateUri": "[uri(deployment().properties.templateLink.uri, 'spoke-vnet.json')]",
+        "on-prem-vnet":"[parameters('config')['vnets'][0]]",
+        "hub-vnet":"[parameters('config')['vnets'][1]]",
+        "spoke-vnet": "[parameters('config')['vnets'][2]]"
+    },
+    "resources": [
+		{
+			"comments": "Create the On-Prem vnet along with NVA, management VMs & DC",
+			"name": "[variables('on-prem-vnet').vnetName]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('onpremTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName": {"value": "[variables('on-prem-vnet').vnetName]"},
+                    "vnetPrefix":  {"value": "[variables('on-prem-vnet').vnetPrefix]"},
+                    "GatewaySubnetPrefix":  {"value": "[variables('on-prem-vnet').GatewaySubnetPrefix]"},
+                    "subnet1Name":  {"value": "[variables('on-prem-vnet').subnet1Name]"},
+                    "subnet1Prefix":  {"value": "[variables('on-prem-vnet').subnet1Prefix]"},
+                    "subnet2Name":  {"value": "[variables('on-prem-vnet').subnet2Name]"},
+                    "subnet2Prefix":  {"value": "[variables('on-prem-vnet').subnet2Prefix]"},
+                    "subnet3Name":  {"value": "[variables('on-prem-vnet').subnet3Name]"},
+                    "subnet3Prefix":  {"value": "[variables('on-prem-vnet').subnet3Prefix]"},
+                    "subnet4Name":  {"value": "[variables('on-prem-vnet').subnet4Name]"},
+                    "subnet4Prefix":  {"value": "[variables('on-prem-vnet').subnet4Prefix]"},
+                    "subnet5Name":  {"value": "[variables('on-prem-vnet').subnet5Name]"},
+                    "subnet5Prefix":  {"value": "[variables('on-prem-vnet').subnet5Prefix]"},
+                    "subnet6Name":  {"value": "[variables('on-prem-vnet').subnet6Name]"},
+                    "subnet6Prefix":  {"value": "[variables('on-prem-vnet').subnet6Prefix]"},
+                    "nvaType":  {"value": "[variables('on-prem-vnet').nvaType]"},
+                    "nvaName":  {"value": "[variables('on-prem-vnet').nvaName]"},
+                    "nvaip0":  {"value": "[variables('on-prem-vnet').nvaip0]"},
+                    "nvaip1":  {"value": "[variables('on-prem-vnet').nvaip1]"},
+                    "createGw":  {"value": "[variables('on-prem-vnet').createGw]"},
+                    "gwName":  {"value": "[variables('on-prem-vnet').gwName]"},
+                    "linuxvmName":  {"value": "[variables('on-prem-vnet').linuxvmName]"},
+                    "windowsvmName":  {"value": "[variables('on-prem-vnet').windowsvmName]"},
+                    "DCvmName":  {"value": "[variables('on-prem-vnet').DCvmName]"},
+                    "DCipAddress": {"value": "[variables('on-prem-vnet').DCipAddress]"},
+                    "domainName":  {"value": "[variables('on-prem-vnet').domainName]"}
+                }
+            },
+            "dependsOn": [
+              
+            ]
+        },
+        {
+			"comments": "Create the hub vnet along with NVA, management VMs & DC",
+			"name": "[variables('hub-vnet').vnetName]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('hubTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName":  {"value": "[variables('hub-vnet').vnetName]"},
+                    "vnetPrefix":  {"value": "[variables('hub-vnet').vnetPrefix]"},
+                    "GatewaySubnetPrefix":  {"value": "[variables('hub-vnet').GatewaySubnetPrefix]"},
+                    "subnet1Name":  {"value": "[variables('hub-vnet').subnet1Name]"},
+                    "subnet1Prefix":  {"value": "[variables('hub-vnet').subnet1Prefix]"},
+                    "subnet2Name":  {"value": "[variables('hub-vnet').subnet2Name]"},
+                    "subnet2Prefix":  {"value": "[variables('hub-vnet').subnet2Prefix]"},
+                    "subnet3Name":  {"value": "[variables('hub-vnet').subnet3Name]"},
+                    "subnet3Prefix":  {"value": "[variables('hub-vnet').subnet3Prefix]"},
+                    "subnet4Name":  {"value": "[variables('hub-vnet').subnet4Name]"},
+                    "subnet4Prefix":  {"value": "[variables('hub-vnet').subnet4Prefix]"},
+                    "nvaType":  {"value": "[variables('hub-vnet').nvaType]"},
+                    "nvaName":  {"value": "[variables('hub-vnet').nvaName]"},
+                    "nvaip0":  {"value": "[variables('hub-vnet').nvaip0]"},
+                    "nvaip1":  {"value": "[variables('hub-vnet').nvaip1]"},
+                    "createGw":  {"value": "[variables('hub-vnet').createGw]"},
+                    "gwName":  {"value": "[variables('hub-vnet').gwName]"},
+                    "linuxvmName":  {"value": "[variables('hub-vnet').linuxvmName]"},
+                    "windowsvmName":  {"value": "[variables('hub-vnet').windowsvmName]"}
+                }
+            },
+            "dependsOn": [
+              
+            ]
+        },
+        {
+			"comments": "Create the spoke vnet with a two tier app ",
+			"name": "[variables('spoke-vnet').vnetName]",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('spokeTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetName":  {"value":"[variables('spoke-vnet').vnetName]"},
+                    "vnetPrefix":  {"value":"[variables('spoke-vnet').vnetPrefix]"},
+                    "subnet1Name":  {"value":"[variables('spoke-vnet').subnet1Name]"},
+                    "subnet1Prefix":  {"value":"[variables('spoke-vnet').subnet1Prefix]"},
+                    "subnet2Name":  {"value":"[variables('spoke-vnet').subnet2Name]"},
+                    "subnet2Prefix":  {"value":"[variables('spoke-vnet').subnet2Prefix]"},
+                    "WebvmName":  {"value":"[variables('spoke-vnet').WebvmName]"},
+                    "WebvmSize":  {"value":"[variables('spoke-vnet').WebvmSize]"},
+                    "SQLvmName":  {"value":"[variables('spoke-vnet').SQLvmName]"},
+                    "SQLvmSize":  {"value":"[variables('spoke-vnet').SQLvmSize]"}          
+                }
+            },
+            "dependsOn": [
+              
+            ]
+        }
+    ]
+}

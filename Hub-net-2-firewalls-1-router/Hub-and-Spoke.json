@@ -1,0 +1,123 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "lab-user",
+            "metadata": {
+                "description": "Password to be configured in the NVA (user is lab-user)"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "defaultValue": null,
+            "metadata": {
+                "description": "Password to be configured in the NVA (user is lab-user)"
+            }
+        },
+        "config": {
+            "type": "object",
+            "defaultValue": {
+                "vnets": [
+                    {
+                        "vnetName": "hub-vnet",
+                        "vnetPrefix": "10.0.0.0/16",
+                        "Outside": "10.0.1.0/24",
+                        "Inside": "10.0.2.0/24",
+                        "ServersNet01": "10.0.3.0/24",
+                        "ServersNet02": "10.0.4.0/24",
+                        "vmName": "hub-srv01",
+                        "nvaName": "asafw",
+                        "nvaip0": "10.0.1.10",
+                        "nvaip1": "10.0.2.10"
+                    },
+                    {
+                        "vnetName": "spoke-vnet",
+                        "vnetPrefix": "10.1.0.0/24",
+                        "FrontNet": "10.1.0.0/26",
+                        "AppNet": "10.1.0.64/26",
+                        "DBNet": "10.1.0.128/26",
+                        "vmName": "sp-srv01"
+                    }
+                ]
+            }
+        }
+    },
+    "variables": {
+        "networkApiVersion": "2018-08-01",
+        "deploymentApiVersion": "2017-05-10",
+        "hubTemplateUri": "[uri(deployment().properties.templateLink.uri, 'hub-vnet.json')]",
+        "spokeTemplateUri": "[uri(deployment().properties.templateLink.uri, 'spoke-vnet.json')]",
+        "hub-vnet":"[parameters('config')['vnets'][0]]",
+        "spoke-vnet": "[parameters('config')['vnets'][1]]"
+    },
+    "resources": [
+		{
+			"comments": "Create Hub and Spoke vnets along with NVAs and VMs",
+			"name": "hub-vnet",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('hubTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetPrefix": {"value": "[variables('hub-vnet').vnetPrefix]"},
+                    "vnetName": {"value": "[variables('hub-vnet').vnetName]"},
+                    "subnet1Name": {"value": "Outside"},
+                    "subnet1Prefix": {"value": "[variables('hub-vnet').Outside]"},
+                    "subnet2Name": {"value": "Inside"},
+                    "subnet2Prefix": {"value": "[variables('hub-vnet').Inside]"},
+                    "subnet3Name": {"value": "ServersNet01"},
+                    "subnet3Prefix": {"value": "[variables('hub-vnet').ServersNet01]"},
+                    "subnet4Name": {"value": "ServersNet02"},
+                    "subnet4Prefix": {"value": "[variables('hub-vnet').ServersNet02]"},
+                    "nvaName": {"value": "[variables('hub-vnet').nvaName]"},
+                    "nvaSize": {"value": "Standard_D3_v2"},
+                    "nvaip0": {"value": "[variables('hub-vnet').nvaip0]"},
+                    "nvaip1": {"value": "[variables('hub-vnet').nvaip1]"},                               
+					"vmName": {"value": "[variables('hub-vnet').vmName]"},
+                    "vmSize": {"value": "Standard_B1s"}
+                }
+            },
+            "dependsOn": [
+              
+            ]
+        },
+{
+			"comments": "Simulate a number of vnets, each including two subnets, an Ubuntu VM and a CSR 1Kv NVA",
+			"name": "spoke-vnet",
+            "type": "Microsoft.Resources/deployments",
+			"apiVersion": "[variables('deploymentApiVersion')]",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('spokeTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+                    "adminUsername": {"value": "[parameters('adminUsername')]"},
+                    "adminPassword": {"value": "[parameters('adminPassword')]"},
+                    "vnetPrefix": {"value": "[variables('spoke-vnet').vnetPrefix]"},
+                    "vnetName": {"value": "[variables('spoke-vnet').vnetName]"},
+                    "subnet1Name": {"value": "FrontNet"},
+                    "subnet1Prefix": {"value": "[variables('spoke-vnet').FrontNet]"},
+                    "subnet2Name": {"value": "AppNet"},
+                    "subnet2Prefix": {"value": "[variables('spoke-vnet').AppNet]"},
+                    "subnet3Name": {"value": "DBNet"},
+                    "subnet3Prefix": {"value": "[variables('spoke-vnet').DBNet]"},    
+					"vmName": {"value": "[variables('spoke-vnet').vmName]"},
+                    "vmSize": {"value": "Standard_B1s"} 
+                }
+            },
+            "dependsOn": [
+                "[variables('hub-vnet').vnetName]"
+            ]   			
+        }
+    ]
+}

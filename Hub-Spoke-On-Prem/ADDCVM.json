@@ -1,0 +1,199 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "defaultValue": "myVnet",
+            "type": "string"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string"
+        },
+        "subnetName": {
+            "defaultValue": "serverSubnet",
+            "type": "string"
+		},
+        "adminUsername": {
+            "defaultValue": null,
+            "type": "string"
+        },
+        "adminPassword": {
+            "defaultValue": null,
+            "type": "securestring"
+        },
+        "domainName": {
+            "type": "string",
+            "metadata": {
+                "description": "The FQDN of the Active Directory Domain to be created"
+            }
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            },
+            "defaultValue": "[deployment().properties.templateLink.uri]"
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation"
+            },
+            "defaultValue": ""
+        },
+        "vmName": {
+            "defaultValue": "myvm",
+            "type": "string"
+        },
+        "vmType": {
+            "defaultValue": "ws2016",
+            "type": "string",
+            "allowedValues": [
+                "ws2016"
+            ]
+        },
+        "vmSize": {
+            "defaultValue": "Standard_D2s_v3",
+            "type": "string"
+        },
+        "ipAddress": {
+            "defaultValue": "10.0.0.1",
+            "type": "string"
+        },
+        "createPip": {
+            "defaultValue": "yes",
+            "type": "string",
+            "allowedValues": ["yes", "no"]
+        }
+    },
+ 
+    "variables": {
+        "nicName": "[concat(parameters('vmName'),'-nic')]",
+        "pipName": "[concat(parameters('vmName'),'-pip')]",
+		"diskName": "[concat(parameters('vmName'),'-disk')]",
+		"apiVersion": "2018-04-01",
+        "nicTemplateUriHash": {
+            "yes": "[uri(deployment().properties.templateLink.uri, 'nic_NSG_noSLB_PIP_static.json')]",
+            "no": "[uri(deployment().properties.templateLink.uri, 'nic_noNSG_noSLB_noPIP_static.json')]"
+        },
+        "nicTemplateURI": "[variables('nicTemplateUriHash')[parameters('createPip')]]",
+        "skuDataTable": {
+            "ws2016": {
+                "sku": "2016-Datacenter-smalldisk",
+                "publisher": "MicrosoftWindowsServer",
+                "offer": "WindowsServer",
+                "size": "[parameters('vmSize')]"
+            }
+        },
+        "skuData": "[variables('skuDataTable')[parameters('vmType')]]"
+    },        
+    "resources": [
+		{	
+			"comments": "VMs created and linked to NICs and storage account",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('vmName')]",
+            "apiVersion": "[variables('apiVersion')]",
+            "location": "[parameters('location')]",
+            "properties": {
+				"hardwareProfile": {
+                    "vmSize": "[variables('skuData')['size']]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('skuData')['publisher']]",
+                        "offer": "[variables('skuData')['offer']]",
+                        "sku": "[variables('skuData')['sku']]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "name": "[concat(parameters('vmName'), '-adds')]",
+                            "caching": "None",
+                            "createOption": "Empty",
+                            "diskSizeGB": 20,
+                            "managedDisk": {
+                                "storageAccountType": "StandardSSD_LRS"
+                            },
+                            "lun": 0
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "secrets": [],
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+                        }
+                    ]
+                },
+                "licenseType": "Windows_Server"
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2019-03-01",
+                    "name": "CreateADForest",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[parameters('vmName')]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.19",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "ModulesUrl": "[uri(parameters('_artifactsLocation'), concat('DSC/CreateADPDC.zip', parameters('_artifactsLocationSasToken')))]",
+                            "ConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
+                            "Properties": {
+                                "DomainName": "[parameters('domainName')]",
+                                "AdminCreds": {
+                                    "UserName": "[parameters('adminUsername')]",
+                                    "Password": "PrivateSettingsRef:AdminPassword"
+                                }
+                            }
+                        },
+                        "protectedSettings": {
+                            "Items": {
+                                "AdminPassword": "[parameters('adminPassword')]"
+                            }
+                        }
+                    }
+                }
+            ],
+            "dependsOn": [
+                "[variables('nicName')]"
+            ]
+        },
+		{
+            "comments": "Create NIC for the VM with or without public IP",
+			"name": "[variables('nicName')]",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2016-06-01",
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('nicTemplateUri')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters":  {
+                    "pipName": { "value": "[variables('pipName')]" },
+                    "nicName": { "value": "[variables('nicName')]" },
+                    "vnetName": { "value": "[parameters('vnetName')]" },
+                    "subnetName": { "value": "[parameters('subnetName')]"},
+                    "ipAddress": {"value": "[parameters('ipAddress')]"}
+                }
+			},
+            "dependsOn": []
+        }
+    ]
+}
